@@ -1,0 +1,32 @@
+services:
+  production:
+    container_name: production
+    env_file:
+      - ./.env
+    build:
+      target: production
+      context: .
+      args:
+        - PORT=$PORT
+    ports:
+      - ${PORT}:${PORT}
+
+  dev:
+    container_name: dev
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    build:
+      target: dev
+      context: .
+      args:
+        - PORT=$PORT
+    ports:
+      - $PORT:$PORT
+      - 9229:9229
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules/
+
+volumes:
+  node_modules:

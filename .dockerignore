@@ -1,0 +1,9 @@
+*
+!/package.json
+!/pnpm-lock.yaml
+!/tsconfig.build.json
+!/tsconfig.json
+!/.swcrc
+!/nest-cli.json
+!/src
+!/.env

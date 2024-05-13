@@ -18,7 +18,7 @@
     "test:e2e": "vitest run --coverage --config ./vitest.config.e2e.ts",
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@commitlint/cli": "^19.3.0",

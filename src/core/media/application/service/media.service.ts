@@ -37,4 +37,15 @@ export class MediaService implements IMediaService {
     const results = await Promise.all(promises);
     return results;
   }
+
+  async deleteFile(publicId: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      v2.uploader
+        .destroy(publicId, error => {
+          if (error) return reject(error);
+          resolve();
+        })
+        .catch(reject);
+    });
+  }
 }

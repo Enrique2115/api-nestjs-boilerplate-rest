@@ -6,6 +6,7 @@ import {
 import {
   Controller,
   FileTypeValidator,
+  Get,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -14,12 +15,18 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { MediaService } from '@core/media/application';
-import { FilesUploadSchema, FileUploadSchema } from '@core/media/presentation';
-
-import { MediaDto } from '../../domain/dto/media.dto';
+import { MediaDto } from '@core/media/domain';
+import { FileUploadSchema } from '@core/media/presentation/schemas/file-upload.schema';
+import { FilesUploadSchema } from '@core/media/presentation/schemas/files-upload.schema';
 
 @ApiTags('Media')
 @Controller('media')
@@ -77,5 +84,15 @@ export class MediaController {
         url: item.secure_url as string,
       };
     });
+  }
+
+  @Get('/:publicId/delete')
+  @ApiOperation({ summary: 'Delete file by publicId' })
+  @ApiResponse({
+    status: 200,
+    description: 'File deleted successfully',
+  })
+  async deleteFile(@Param('publicId') publicId: string): Promise<void> {
+    await this.mediaService.deleteFile(publicId);
   }
 }

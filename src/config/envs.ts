@@ -13,6 +13,13 @@ interface EnvVars {
   PORT: number;
   HOST: string;
   NODE_ENV: string;
+  REDIS_HOST: string;
+  REDIS_USERNAME: string;
+  REDIS_PASSWORD: string;
+  REDIS_PORT: number;
+  JWT_SECRET: string;
+  DATABASE_TYPE: string;
+  DATABASE_URL: string;
 }
 
 const envsSchema = joi
@@ -23,6 +30,13 @@ const envsSchema = joi
     API_NAME: joi.string().required(),
     API_KEY: joi.string().required(),
     API_SECRET: joi.string().required(),
+    REDIS_HOST: joi.string().required(),
+    REDIS_USERNAME: joi.string().required(),
+    REDIS_PASSWORD: joi.string().required(),
+    REDIS_PORT: joi.number().required(),
+    JWT_SECRET: joi.string().required(),
+    DATABASE_TYPE: joi.string().required(),
+    DATABASE_URL: joi.string().required(),
   })
   .unknown(true);
 
@@ -42,5 +56,18 @@ export const envs = {
     API_NAME: envVars.API_NAME,
     API_KEY: envVars.API_KEY,
     API_SECRET: envVars.API_SECRET,
+  },
+  REDIS: {
+    HOST: envVars.REDIS_HOST,
+    PORT: envVars.REDIS_PORT,
+    USERNAME: envVars.REDIS_USERNAME,
+    PASSWORD: envVars.REDIS_PASSWORD,
+  },
+  JWT: {
+    SECRET: envVars.JWT_SECRET,
+  },
+  DATABASE: {
+    TYPE: envVars.DATABASE_TYPE,
+    URL: envVars.DATABASE_URL,
   },
 };

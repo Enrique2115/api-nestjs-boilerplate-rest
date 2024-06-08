@@ -11,6 +11,33 @@ services:
     ports:
       - ${PORT}:${PORT}
 
+  redis:
+    container_name: redis-db
+    image: redis:7.0.5-alpine
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  postgres:
+    container_name: postgres-db
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
   dev:
     container_name: dev
     restart: unless-stopped
@@ -30,3 +57,6 @@ services:
 
 volumes:
   node_modules:
+  postgres:
+  redis:
+    driver: local

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import 'dotenv/config';
 
 import * as joi from 'joi';

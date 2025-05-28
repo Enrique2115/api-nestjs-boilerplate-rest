@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ArgumentsHost,
   BadRequestException,
@@ -20,7 +17,7 @@ export interface IResponseError {
   status: number;
   message: string;
   code: string;
-  reasons?: any;
+  reasons?: unknown;
   path: string;
   method: string;
 }
@@ -38,7 +35,7 @@ export class ErrorResponseNormalizerFilter implements ExceptionFilter {
 
     const response = ctx.getResponse<FastifyReply>();
 
-    let message: string = (exception as any).message;
+    let message: string = (exception as unknown as { message: string }).message;
     let code = 'HttpException';
     let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
     let reasons: IReason = {};
@@ -58,13 +55,13 @@ export class ErrorResponseNormalizerFilter implements ExceptionFilter {
       case EntityNotFoundError: {
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         message = (exception as EntityNotFoundError).message;
-        code = (exception as any).code;
+        code = (exception as unknown as { code: string }).code;
         break;
       }
       case CannotCreateEntityIdMapError: {
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         message = (exception as CannotCreateEntityIdMapError).message;
-        code = (exception as any).code;
+        code = (exception as unknown as { code: string }).code;
         break;
       }
       case BadRequestException: {
@@ -72,6 +69,14 @@ export class ErrorResponseNormalizerFilter implements ExceptionFilter {
         reasons = (exception as HttpException).getResponse() as {
           message?: string[];
         };
+        break;
+      }
+      case TypeError: {
+        const error = exception as Error;
+        const path = error.stack?.split('\n')[1].trim().split(' ').pop() || '';
+
+        status = HttpStatus.UNPROCESSABLE_ENTITY;
+        message = `${error.message} Stack: ${path}`;
         break;
       }
       default: {

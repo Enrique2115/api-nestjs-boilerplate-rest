@@ -42,6 +42,10 @@ export class AuthService implements IAuthService {
   ): Promise<UserModel | null> {
     const user = await this.authRepository.findUserByUsername(username);
 
+    if (!user) {
+      throw new BadRequestException('Usuario o contraseña incorrectos');
+    }
+
     const isValid = await this.bcryptService.comparePassword(
       password,
       user.password,

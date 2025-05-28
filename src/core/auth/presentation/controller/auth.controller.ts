@@ -33,7 +33,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getMe(@Req() req): UserModel {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return req.user as UserModel;
   }
 

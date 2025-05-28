@@ -1,9 +1,10 @@
 import { File } from '@nest-lab/fastify-multer';
-import { createMock, Mock } from '@tests/utils/mock';
 import { UploadApiResponse } from 'cloudinary';
 
 import { MediaService } from '@src/core/media/application';
 import { MediaController } from '@src/core/media/presentation';
+
+import { createMock, Mock } from '@tests/utils/mock';
 
 describe('MediaController', () => {
   let controller: MediaController;

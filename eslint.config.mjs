@@ -30,9 +30,9 @@ export default [
     compat.extends('plugin:prettier/recommended', 'plugin:node/recommended'),
   ),
 
-  // Configuración principal
+  // Configuración principal para archivos TypeScript
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     plugins: {
       'simple-import-sort': simpleImportSort,
     },
@@ -41,15 +41,13 @@ export default [
       ecmaVersion: 'latest',
       parser: tsParser,
       parserOptions: {
+        // Solucionando el error del project service
         project: ['./tsconfig.build.json'],
-        projectService: {
-          allowDefaultProject: ['eslint.config.js'],
-        },
+        projectService: true,
         tsconfigRootDir: __dirname,
       },
       globals: {
         ...globals.node,
-        ...globals.browser,
         NodeJS: true,
       },
     },
@@ -75,10 +73,11 @@ export default [
             ['^node:'],
             // External packages
             [String.raw`^@?\w`],
-            // Internal packages - ajusta estos paths según tu estructura
+            // Internal packages - usando tus paths del tsconfig
             ['^@src(/.*|$)'],
             ['^@core(/.*|$)'],
             ['^@infra(/.*|$)'],
+            ['^@tests(/.*|$)'],
             // Other imports
             ['^'],
             // Relative imports
@@ -111,19 +110,86 @@ export default [
     },
   },
 
+  // Configuración específica para archivos de configuración (eslint.config.mjs)
+  {
+    files: ['eslint.config.mjs', '*.config.{js,mjs,cjs}'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      // Deshabilitar reglas problemáticas para archivos de configuración
+      'node/no-unpublished-import': 'off',
+      'node/no-missing-import': 'off',
+      'no-console': 'off',
+      'unicorn/prefer-module': 'off',
+      'unicorn/prefer-top-level-await': 'off',
+      'unicorn/prevent-abbreviations': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
+  // Configuración específica para archivos JavaScript (si los tienes)
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 'latest',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+      'no-console': 'warn',
+      'unicorn/prefer-module': 'off',
+      'unicorn/prefer-top-level-await': 'off',
+      'unicorn/prevent-abbreviations': 'off',
+    },
+  },
+
+  // Configuración para archivos de test
+  {
+    files: ['tests/**/*.{ts,js}', '**/*.spec.ts', '**/*.test.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        // Vitest globals
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
   // Prettier debe ir al final para sobrescribir conflictos de formato
   eslintConfigPrettier,
 
   // Ignorar archivos
   {
     ignores: [
-      'eslint.config.js',
-      'lint-staged.config.mjs',
       'node_modules/*',
       'dist/*',
       'coverage/*',
       'pnpm-lock.yaml',
       '.gitignore',
+      '*.log',
     ],
   },
 ];

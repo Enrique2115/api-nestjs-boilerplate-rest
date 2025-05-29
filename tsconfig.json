@@ -1,22 +1,20 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
-    "declaration": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": false,
-    "incremental": true,
-    "module": "CommonJS",
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
+    "inlineSources": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "removeComments": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strictBindCallApply": false,
-    "strictNullChecks": false,
-    "target": "es2022",
+    "target": "esnext",
     "paths": {
       "@src/*": ["src/*"],
       "@core/*": ["src/core/*"],
@@ -24,5 +22,7 @@
       "@tests/*": ["tests/*"]
     },
     "types": ["vitest/globals"]
-  }
+  },
+  "exclude": ["node_modules", "dist", "test"]
+
 }

@@ -11,17 +11,19 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "rimraf coverage .nyc_output && concurrently 'npm:test:unit' 'npm:test:e2e'",
+    "test": "rimraf coverage .nyc_output && concurrently 'npm:test:unit' 'npm:test:e2e' && npm run calculate-global-test-coverage",
     "test:unit": "vitest run --coverage --config ./vitest.config.unit.ts",
     "test:e2e": "vitest run --coverage --config ./vitest.config.e2e.ts",
-    "prebuild": "rimraf dist",
-    "build": "nest build",
+    "calculate-global-test-coverage": "tsx scripts/calculate-global-test-coverage.ts",
+    "prebuild": "rimraf dist; exit 0",
+    "build": "nest build --path tsconfig.build.json",
+    "clean": "rimraf .nyc_output coverage dist node_modules",
     "prepare": "husky || true"
   },
   "dependencies": {
@@ -52,6 +54,7 @@
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "tsx": "^4.19.4",
     "typeorm": "^0.3.24"
   },
   "devDependencies": {

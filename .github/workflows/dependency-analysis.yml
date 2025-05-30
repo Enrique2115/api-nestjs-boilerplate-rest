@@ -83,9 +83,11 @@ jobs:
           cat "$OUTPUT_FILE"
 
           # Guardar contenido para el comentario
-          echo "ANALYSIS_OUTPUT<<EOF" >> "$GITHUB_ENV"
-          cat "$OUTPUT_FILE" >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
+          {
+            echo "ANALYSIS_OUTPUT<<EOF"
+            cat "$OUTPUT_FILE"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Create sticky comment
         uses: marocchino/sticky-pull-request-comment@v2

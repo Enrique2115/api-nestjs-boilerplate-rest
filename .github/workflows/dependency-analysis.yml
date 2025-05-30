@@ -37,7 +37,7 @@ jobs:
           echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:" | tee -a $OUTPUT_FILE
           echo "==========================================" | tee -a $OUTPUT_FILE
 
-          depcheck_output=$(depcheck --json)
+          depcheck_output=$(depcheck --json || echo "{}") # Handle errors gracefully
           if command -v jq &> /dev/null; then
             echo "$depcheck_output" | jq -r '
               if .dependencies | length > 0 then
@@ -57,7 +57,7 @@ jobs:
             echo "⚠️  jq no está instalado. Mostrando salida simplificada..." | tee -a $OUTPUT_FILE
             echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/" | tee -a $OUTPUT_FILE
             echo "" | tee -a $OUTPUT_FILE
-            depcheck | tee -a $OUTPUT_FILE
+            echo "$depcheck_output" | tee -a $OUTPUT_FILE
           fi
 
           echo "" | tee -a $OUTPUT_FILE

@@ -1,0 +1,83 @@
+name: Dependency Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          npm install -g depcheck
+
+      - name: Run dependency analysis
+        id: analysis
+        run: |
+          OUTPUT_FILE="analysis_output.txt"
+
+          echo "🔍 Analizando dependencias no utilizadas..." | tee -a $OUTPUT_FILE
+
+          echo "" | tee -a $OUTPUT_FILE
+          echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:" | tee -a $OUTPUT_FILE
+          echo "==========================================" | tee -a $OUTPUT_FILE
+
+          depcheck_output=$(depcheck --json)
+          if command -v jq &> /dev/null; then
+            echo "$depcheck_output" | jq -r '
+              if .dependencies | length > 0 then
+                "❌ DEPENDENCIAS NO USADAS:",
+                (.dependencies[] | "  - " + .)
+              else
+                "✅ Todas las dependencias están siendo utilizadas"
+              end,
+              "",
+              if .devDependencies | length > 0 then
+                "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
+                (.devDependencies[] | "  - " + .)
+              else
+                "✅ Todas las dependencias de desarrollo están siendo utilizadas"
+              end' | tee -a $OUTPUT_FILE
+          else
+            echo "⚠️  jq no está instalado. Mostrando salida simplificada..." | tee -a $OUTPUT_FILE
+            echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/" | tee -a $OUTPUT_FILE
+            echo "" | tee -a $OUTPUT_FILE
+            depcheck | tee -a $OUTPUT_FILE
+          fi
+
+          echo "" | tee -a $OUTPUT_FILE
+          echo "🧹 RECOMENDACIONES:" | tee -a $OUTPUT_FILE
+          echo "==================" | tee -a $OUTPUT_FILE
+          echo "1. Revisa las dependencias marcadas como no utilizadas" | tee -a $OUTPUT_FILE
+          echo "2. Mueve dependencias de build a devDependencies" | tee -a $OUTPUT_FILE
+          echo "3. Considera alternativas más ligeras para paquetes pesados" | tee -a $OUTPUT_FILE
+          echo "4. Usa pnpm prune regularmente" | tee -a $OUTPUT_FILE
+
+          # Guardar contenido para el comentario
+          echo "ANALYSIS_OUTPUT<<EOF" >> $GITHUB_ENV
+          cat $OUTPUT_FILE >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create sticky comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: dependency-analysis
+          message: |
+            ${{ env.ANALYSIS_OUTPUT }}

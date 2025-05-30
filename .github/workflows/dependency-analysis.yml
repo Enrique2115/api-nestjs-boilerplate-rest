@@ -14,9 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-
       - name: Setup Node ⚙️
         uses: ./.github/actions/setup-node
 
@@ -31,46 +28,72 @@ jobs:
         run: |
           OUTPUT_FILE="analysis_output.txt"
 
-          echo "🔍 Analizando dependencias no utilizadas..." | tee -a $OUTPUT_FILE
+          # Grupo 1: Encabezado inicial
+          {
+            echo "🔍 Analizando dependencias no utilizadas..."
+            echo ""
+            echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:"
+            echo "=========================================="
+          } | tee -a "$OUTPUT_FILE"
 
-          echo "" | tee -a $OUTPUT_FILE
-          echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:" | tee -a $OUTPUT_FILE
-          echo "==========================================" | tee -a $OUTPUT_FILE
-
-          depcheck_output=$(depcheck --json || echo "{}") # Handle errors gracefully
+          # Grupo 2: Análisis de dependencias
+          depcheck_output=$(depcheck --json || echo "{}")
           if command -v jq &> /dev/null; then
-            echo "$depcheck_output" | jq -r '
-              if .dependencies | length > 0 then
-                "❌ DEPENDENCIAS NO USADAS:",
-                (.dependencies[] | "  - " + .)
-              else
-                "✅ Todas las dependencias están siendo utilizadas"
-              end,
-              "",
-              if .devDependencies | length > 0 then
-                "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
-                (.devDependencies[] | "  - " + .)
-              else
-                "✅ Todas las dependencias de desarrollo están siendo utilizadas"
-              end' | tee -a $OUTPUT_FILE
+            {
+              echo "$depcheck_output" | jq -r '
+                if .dependencies? and (.dependencies | length) > 0 then
+                  "❌ DEPENDENCIAS NO USADAS:",
+                  (.dependencies[] | "  - " + .)
+                else
+                  "✅ Todas las dependencias están siendo utilizadas"
+                end,
+                "",
+                if .devDependencies? and (.devDependencies | length) > 0 then
+                  "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
+                  (.devDependencies[] | "  - " + .)
+                else
+                  "✅ Todas las dependencias de desarrollo están siendo utilizadas"
+                end'
+            } | tee -a "$OUTPUT_FILE"
           else
-            echo "⚠️  jq no está instalado. Mostrando salida simplificada..." | tee -a $OUTPUT_FILE
-            echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/" | tee -a $OUTPUT_FILE
-            echo "" | tee -a $OUTPUT_FILE
-            echo "$depcheck_output" | tee -a $OUTPUT_FILE
+            {
+              echo "⚠️  jq no está instalado. Mostrando salida simplificada..."
+              echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/"
+              echo ""
+              depcheck
+            } | tee -a "$OUTPUT_FILE"
           fi
 
-          echo "" | tee -a $OUTPUT_FILE
-          echo "🧹 RECOMENDACIONES:" | tee -a $OUTPUT_FILE
-          echo "==================" | tee -a $OUTPUT_FILE
-          echo "1. Revisa las dependencias marcadas como no utilizadas" | tee -a $OUTPUT_FILE
-          echo "2. Mueve dependencias de build a devDependencies" | tee -a $OUTPUT_FILE
-          echo "3. Considera alternativas más ligeras para paquetes pesados" | tee -a $OUTPUT_FILE
-          echo "4. Usa pnpm prune regularmente" | tee -a $OUTPUT_FILE
+          # Grupo 3: Tamaño de dependencias
+          {
+            echo ""
+            echo "📈 TAMAÑO DE NODE_MODULES:"
+            echo "========================="
+            du -sh node_modules 2>/dev/null || echo "node_modules no encontrado"
+          } | tee -a "$OUTPUT_FILE"
+
+          # Grupo 4: Paquetes pesados
+          {
+            echo ""
+            echo "📦 TOP 10 PAQUETES MÁS PESADOS:"
+            echo "==============================="
+            du -sh node_modules/*/ 2>/dev/null | sort -hr | head -10
+          } | tee -a "$OUTPUT_FILE"
+
+          # Grupo 5: Recomendaciones
+          {
+            echo ""
+            echo "🧹 RECOMENDACIONES:"
+            echo "=================="
+            echo "1. Revisa las dependencias marcadas como no utilizadas"
+            echo "2. Mueve dependencias de build a devDependencies"
+            echo "3. Considera alternativas más ligeras para paquetes pesados"
+            echo "4. Usa pnpm prune regularmente"
+          } | tee -a "$OUTPUT_FILE"
 
           # Guardar contenido para el comentario
           echo "ANALYSIS_OUTPUT<<EOF" >> $GITHUB_ENV
-          cat $OUTPUT_FILE >> $GITHUB_ENV
+          cat "$OUTPUT_FILE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Create sticky comment

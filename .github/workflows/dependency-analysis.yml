@@ -44,12 +44,16 @@ jobs:
                   "❌ DEPENDENCIAS NO USADAS:",
                   (.dependencies[] | "  - " + .),
                   ""
+                else
+                  ""
                 end')
               
               unused_dev_deps=$(echo "$depcheck_output" | jq -r '
                 if .devDependencies? and (.devDependencies | length) > 0 then
                   "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
                   (.devDependencies[] | "  - " + .),
+                  ""
+                else
                   ""
                 end')
               

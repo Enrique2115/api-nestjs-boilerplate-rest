@@ -45,7 +45,8 @@ jobs:
                   (.dependencies[] | "  - " + .),
                   ""
                 else
-                  ""
+                  "
+                  "
                 end')
               
               unused_dev_deps=$(echo "$depcheck_output" | jq -r '

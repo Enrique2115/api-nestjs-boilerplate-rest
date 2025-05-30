@@ -10,12 +10,6 @@ import { envs } from '@src/config';
       url: envs.DATABASE.URL,
       autoLoadEntities: true,
       synchronize: true,
-      ssl:
-        envs.NODE_ENV !== 'development' && envs.NODE_ENV !== 'test'
-          ? {
-              rejectUnauthorized: false,
-            }
-          : false,
     }),
   ],
 })

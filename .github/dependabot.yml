@@ -12,7 +12,8 @@ updates:
       include: 'scope'
     versioning-strategy: 'increase'
     ignore:
-      - dependency-name: 'react-day-picker'
+      - dependency-name: 'vitest'
+      - dependency-name: '@vitest/coverage-istanbul'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

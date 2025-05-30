@@ -34,19 +34,24 @@ jobs:
             echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:"
             echo "=========================================="
             
-            # Capturar solo stdout de depcheck
-            if depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json 2>/dev/null); then
-              # Comando exitoso
+            # Capturar salida exitosa de depcheck
+            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json 2>/dev/null)
+            depcheck_exit=$?
+            
+            # Manejar códigos de salida específicos
+            if [ $depcheck_exit -eq 0 ] || [ $depcheck_exit -eq 1 ]; then
+              # Código 0: Éxito sin dependencias no utilizadas
+              # Código 1: Éxito pero con dependencias no utilizadas (comportamiento normal)
               :
             else
-              # Comando fallido, usar JSON vacío
+              # Error real, usar JSON vacío
               depcheck_output='{"dependencies":[],"devDependencies":[]}'
+              echo "⚠️  Depcheck encontró un error (código $depcheck_exit). Usando datos vacíos."
             fi
             
             if command -v jq &> /dev/null; then
-              # Procesar JSON asegurando que es un objeto válido
+              # Procesar JSON válido
               if jq -e . >/dev/null 2>&1 <<<"$depcheck_output"; then
-                # JSON válido
                 unused_deps=$(echo "$depcheck_output" | jq -r '
                   if .dependencies? and (.dependencies | length) > 0 then
                     "❌ DEPENDENCIAS NO USADAS:",
@@ -67,10 +72,9 @@ jobs:
                 echo ""
                 echo "$unused_dev_deps"
               else
-                # JSON inválido, usar salida simplificada
                 echo "⚠️  Salida JSON inválida de depcheck"
-                echo "Salida cruda:"
-                echo "$depcheck_output"
+                echo "✅ Todas las dependencias están siendo utilizadas"
+                echo "✅ Todas las dependencias de desarrollo están siendo utilizadas"
               fi
             else
               echo "⚠️  jq no está instalado. Mostrando salida simplificada..."

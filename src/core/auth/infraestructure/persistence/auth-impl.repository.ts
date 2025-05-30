@@ -36,7 +36,15 @@ export class AuthRespository implements IAuthRepository {
     return this.userRepository.findOne({
       where: { username },
       relations: ['roles'],
-      select: ['id', 'email', 'password', 'roles', 'status'],
+      select: [
+        'id',
+        'username',
+        'email',
+        'password',
+        'roles',
+        'status',
+        'createdAt',
+      ],
     });
   }
 

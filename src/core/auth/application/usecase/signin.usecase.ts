@@ -35,12 +35,7 @@ export class SignInUseCase {
       role: user.roles.map(role => role.name),
     });
 
-    await this.redisService.set(`user_${user.id}`, {
-      _id: user.id,
-      authKey: user.authKey,
-      email: user.email,
-      role: user.roles.map(role => role.name),
-    });
+    await this.redisService.set(`user_${user.id}`, user);
 
     return {
       token,

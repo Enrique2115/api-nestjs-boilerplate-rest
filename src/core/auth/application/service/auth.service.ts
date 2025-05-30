@@ -1,5 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
+import { RedisService } from '@src/core/redis/redis.service';
+
 import { IAuthService, IBcryptService } from '@core/auth/application';
 import { IAuthRepository, UserModel, UserStatus } from '@core/auth/domain';
 
@@ -11,9 +13,15 @@ export class AuthService implements IAuthService {
 
     @Inject('IBcryptService')
     private readonly bcryptService: IBcryptService,
+
+    private readonly redisService: RedisService,
   ) {}
 
   async checkExistUser(id: string): Promise<UserModel | null> {
+    const user = await this.redisService.get(`user_${id}`);
+
+    if (user) return user as UserModel;
+
     return await this.authRepository.findUserById(id);
   }
 

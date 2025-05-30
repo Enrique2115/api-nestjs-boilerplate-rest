@@ -35,7 +35,7 @@ jobs:
             echo "=========================================="
             
             # Capturar salida de depcheck con manejo de errores
-            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json || echo '{"dependencies":[],"devDependencies":[]}')
+            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json)
             
             if command -v jq &> /dev/null; then
               # Procesar JSON correctamente verificando si existen las propiedades

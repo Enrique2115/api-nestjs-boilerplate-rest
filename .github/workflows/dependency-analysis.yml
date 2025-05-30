@@ -28,7 +28,6 @@ jobs:
         run: |
           OUTPUT_FILE="analysis_output.txt"
 
-          # Usar bloque único para evitar múltiples redirecciones
           {
             echo "🔍 Analizando dependencias no utilizadas..."
             echo ""
@@ -36,23 +35,32 @@ jobs:
             echo "=========================================="
             
             # Capturar salida de depcheck con manejo de errores
-            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul" --json || echo '{"dependencies":[],"devDependencies":[]}')
+            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json || echo '{"dependencies":[],"devDependencies":[]}')
             
             if command -v jq &> /dev/null; then
-              echo "$depcheck_output" | jq -r '
+              # Procesar JSON correctamente verificando si existen las propiedades
+              unused_deps=$(echo "$depcheck_output" | jq -r '
                 if .dependencies? and (.dependencies | length) > 0 then
                   "❌ DEPENDENCIAS NO USADAS:",
-                  (.dependencies[] | "  - " + .)
+                  (.dependencies[] | "  - " + .),
+                  ""
                 else
-                  "✅ Todas las dependencias están siendo utilizadas"
-                end,
-                "",
+                  "✅ Todas las dependencias están siendo utilizadas",
+                  ""
+                end')
+              
+              unused_dev_deps=$(echo "$depcheck_output" | jq -r '
                 if .devDependencies? and (.devDependencies | length) > 0 then
                   "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
-                  (.devDependencies[] | "  - " + .)
+                  (.devDependencies[] | "  - " + .),
+                  ""
                 else
-                  "✅ Todas las dependencias de desarrollo están siendo utilizadas"
-                end'
+                  "✅ Todas las dependencias de desarrollo están siendo utilizadas",
+                  ""
+                end')
+              
+              echo "$unused_deps"
+              echo "$unused_dev_deps"
             else
               echo "⚠️  jq no está instalado. Mostrando salida simplificada..."
               echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/"
@@ -79,10 +87,8 @@ jobs:
             echo "4. Usa pnpm prune regularmente"
           } > "$OUTPUT_FILE"
 
-          # Mostrar resultados en consola
           cat "$OUTPUT_FILE"
 
-          # Guardar contenido para el comentario
           {
             echo "ANALYSIS_OUTPUT<<EOF"
             cat "$OUTPUT_FILE"

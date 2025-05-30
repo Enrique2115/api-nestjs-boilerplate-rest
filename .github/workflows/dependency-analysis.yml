@@ -1,0 +1,102 @@
+name: Dependency Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node ⚙️
+        uses: ./.github/actions/setup-node
+
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          npm install -g depcheck
+
+      - name: Run dependency analysis
+        id: analysis
+        run: |
+          OUTPUT_FILE="analysis_output.txt"
+
+          {
+            echo "🔍 Analizando dependencias no utilizadas..."
+            echo ""
+            echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:"
+            echo "=========================================="
+            
+            # Capturar solo stdout de depcheck
+            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul,@commitlint/*" --json || echo '{"dependencies":[],"devDependencies":[]}')
+            
+            if command -v jq &> /dev/null; then
+              # Procesar JSON válido
+              unused_deps=$(echo "$depcheck_output" | jq -r '
+                if .dependencies? and (.dependencies | length) > 0 then
+                  "❌ DEPENDENCIAS NO USADAS:",
+                  (.dependencies[] | "  - " + .),
+                  ""
+                else
+                  "
+                  "
+                end')
+              
+              unused_dev_deps=$(echo "$depcheck_output" | jq -r '
+                if .devDependencies? and (.devDependencies | length) > 0 then
+                  "❌ DEPENDENCIAS DE DESARROLLO NO USADAS:",
+                  (.devDependencies[] | "  - " + .),
+                  ""
+                else
+                  ""
+                end')
+              
+              echo "$unused_deps"
+              echo "$unused_dev_deps"
+            else
+              echo "⚠️  jq no está instalado. Mostrando salida simplificada..."
+              echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/"
+              echo ""
+              echo "$depcheck_output"
+            fi
+
+            echo ""
+            echo "📈 TAMAÑO DE NODE_MODULES:"
+            echo "========================="
+            du -sh node_modules 2>/dev/null || echo "node_modules no encontrado"
+
+            echo ""
+            echo "📦 TOP 10 PAQUETES MÁS PESADOS:"
+            echo "==============================="
+            du -sh node_modules/*/ 2>/dev/null | sort -hr | head -10
+
+            echo ""
+            echo "🧹 RECOMENDACIONES:"
+            echo "=================="
+            echo "1. Revisa las dependencias marcadas como no utilizadas"
+            echo "2. Mueve dependencias de build a devDependencies"
+            echo "3. Considera alternativas más ligeras para paquetes pesados"
+            echo "4. Usa pnpm prune regularmente"
+          } > "$OUTPUT_FILE"
+
+          cat "$OUTPUT_FILE"
+
+          {
+            echo "ANALYSIS_OUTPUT<<EOF"
+            cat "$OUTPUT_FILE"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+      - name: Create sticky comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: dependency-analysis
+          message: |
+            ${{ env.ANALYSIS_OUTPUT }}

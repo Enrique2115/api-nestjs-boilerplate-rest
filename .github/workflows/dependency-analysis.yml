@@ -28,18 +28,17 @@ jobs:
         run: |
           OUTPUT_FILE="analysis_output.txt"
 
-          # Grupo 1: Encabezado inicial
+          # Usar bloque único para evitar múltiples redirecciones
           {
             echo "🔍 Analizando dependencias no utilizadas..."
             echo ""
             echo "📊 ANÁLISIS DE DEPENDENCIAS NO UTILIZADAS:"
             echo "=========================================="
-          } | tee -a "$OUTPUT_FILE"
-
-          # Grupo 2: Análisis de dependencias
-          depcheck_output=$(depcheck --json || echo "{}")
-          if command -v jq &> /dev/null; then
-            {
+            
+            # Capturar salida de depcheck con manejo de errores
+            depcheck_output=$(depcheck --ignores="lint-staged,eslint-*,nyc,pino-pretty,rimraf,@vitest/coverage-istanbul" --json || echo '{"dependencies":[],"devDependencies":[]}')
+            
+            if command -v jq &> /dev/null; then
               echo "$depcheck_output" | jq -r '
                 if .dependencies? and (.dependencies | length) > 0 then
                   "❌ DEPENDENCIAS NO USADAS:",
@@ -54,34 +53,23 @@ jobs:
                 else
                   "✅ Todas las dependencias de desarrollo están siendo utilizadas"
                 end'
-            } | tee -a "$OUTPUT_FILE"
-          else
-            {
+            else
               echo "⚠️  jq no está instalado. Mostrando salida simplificada..."
               echo "Instala jq para ver un análisis más detallado: https://stedolan.github.io/jq/download/"
               echo ""
-              depcheck
-            } | tee -a "$OUTPUT_FILE"
-          fi
+              echo "$depcheck_output"
+            fi
 
-          # Grupo 3: Tamaño de dependencias
-          {
             echo ""
             echo "📈 TAMAÑO DE NODE_MODULES:"
             echo "========================="
             du -sh node_modules 2>/dev/null || echo "node_modules no encontrado"
-          } | tee -a "$OUTPUT_FILE"
 
-          # Grupo 4: Paquetes pesados
-          {
             echo ""
             echo "📦 TOP 10 PAQUETES MÁS PESADOS:"
             echo "==============================="
             du -sh node_modules/*/ 2>/dev/null | sort -hr | head -10
-          } | tee -a "$OUTPUT_FILE"
 
-          # Grupo 5: Recomendaciones
-          {
             echo ""
             echo "🧹 RECOMENDACIONES:"
             echo "=================="
@@ -89,12 +77,15 @@ jobs:
             echo "2. Mueve dependencias de build a devDependencies"
             echo "3. Considera alternativas más ligeras para paquetes pesados"
             echo "4. Usa pnpm prune regularmente"
-          } | tee -a "$OUTPUT_FILE"
+          } > "$OUTPUT_FILE"
+
+          # Mostrar resultados en consola
+          cat "$OUTPUT_FILE"
 
           # Guardar contenido para el comentario
-          echo "ANALYSIS_OUTPUT<<EOF" >> $GITHUB_ENV
-          cat "$OUTPUT_FILE" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "ANALYSIS_OUTPUT<<EOF" >> "$GITHUB_ENV"
+          cat "$OUTPUT_FILE" >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
 
       - name: Create sticky comment
         uses: marocchino/sticky-pull-request-comment@v2

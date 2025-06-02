@@ -27,8 +27,8 @@ importers:
         specifier: ^10.4.18
         version: 10.4.18(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/jwt':
-        specifier: ^10.2.0
-        version: 10.2.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))
+        specifier: ^11.0.0
+        version: 11.0.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))
       '@nestjs/passport':
         specifier: ^11.0.5
         version: 11.0.5(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(passport@0.7.0)
@@ -227,7 +227,7 @@ importers:
         version: 8.33.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
       unplugin-swc:
         specifier: ^1.5.3
-        version: 1.5.3(@swc/core@1.11.29)(rollup@4.41.1)
+        version: 1.5.4(@swc/core@1.11.29)(rollup@4.41.1)
       vite:
         specifier: ^5.4.19
         version: 5.4.19(@types/node@20.17.57)(terser@5.40.0)
@@ -1062,10 +1062,10 @@ packages:
       '@nestjs/websockets':
         optional: true
 
-  '@nestjs/jwt@10.2.0':
-    resolution: {integrity: sha512-x8cG90SURkEiLOehNaN2aRlotxT0KZESUliOPKKnjWiyJOcWurkF3w345WOX0P4MgFzUjGoZ1Sy0aZnxeihT0g==}
+  '@nestjs/jwt@11.0.0':
+    resolution: {integrity: sha512-v7YRsW3Xi8HNTsO+jeHSEEqelX37TVWgwt+BcxtkG/OfXJEOs6GZdbdza200d6KqId1pJQZ6UPj1F0M6E+mxaA==}
     peerDependencies:
-      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
 
   '@nestjs/mapped-types@2.0.5':
     resolution: {integrity: sha512-bSJv4pd6EY99NX9CjBIyn4TVDoSit82DUZlL4I3bqNfy5Gt+gXTa86i3I/i0iIV9P4hntcGM5GyO+FhZAhxtyg==}
@@ -1492,8 +1492,8 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
-  '@types/jsonwebtoken@9.0.5':
-    resolution: {integrity: sha512-VRLSGzik+Unrup6BsouBeHsf4d1hOEgYWTm/7Nmw1sXoN1+tRly/Gy/po3yeahnP4jfnQWWAhQAqcNfH7ngOkA==}
+  '@types/jsonwebtoken@9.0.7':
+    resolution: {integrity: sha512-ugo316mmTYBl2g81zDFnZ7cfxlut3o+/EQdaP7J8QN2kY6lJ22hmQYCK5EHcJHbrW+dkCGSCPgbG8JtYj6qSrg==}
 
   '@types/jsonwebtoken@9.0.9':
     resolution: {integrity: sha512-uoe+GxEuHbvy12OUQct2X9JenKM3qAscquYymuQN4fMWG9DBQtykrQEFcAbVACF7qaLw9BePSodUL0kquqBJpQ==}
@@ -4655,8 +4655,8 @@ packages:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
 
-  unplugin-swc@1.5.3:
-    resolution: {integrity: sha512-lfBT7Wtauf/1y89xGt+x8+T7yB7bCMq/qXeXcOcqQddKDULGEg/4O2201Eh6eCBxbEi8J1Tmy2scG5dhiBJONg==}
+  unplugin-swc@1.5.4:
+    resolution: {integrity: sha512-NYa0rEUI8+Ckr+azVyAWIBWOrqnoWsDeHPLCMAsEWXJzkNwG1GtYf/Fe872ulOPKRmQsY1VEd20d5Y3fLiiZQQ==}
     peerDependencies:
       '@swc/core': ^1.2.108
 
@@ -5681,10 +5681,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@nestjs/jwt@10.2.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))':
+  '@nestjs/jwt@11.0.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))':
     dependencies:
       '@nestjs/common': 10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@types/jsonwebtoken': 9.0.5
+      '@types/jsonwebtoken': 9.0.7
       jsonwebtoken: 9.0.2
 
   '@nestjs/mapped-types@2.0.5(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)':
@@ -6063,7 +6063,7 @@ snapshots:
     dependencies:
       '@types/node': 20.17.57
 
-  '@types/jsonwebtoken@9.0.5':
+  '@types/jsonwebtoken@9.0.7':
     dependencies:
       '@types/node': 20.17.57
 
@@ -9405,7 +9405,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin-swc@1.5.3(@swc/core@1.11.29)(rollup@4.41.1):
+  unplugin-swc@1.5.4(@swc/core@1.11.29)(rollup@4.41.1):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.41.1)
       '@swc/core': 1.11.29

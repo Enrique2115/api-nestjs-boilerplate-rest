@@ -1,0 +1,65 @@
+name: 'Wiki'
+
+description: 'Genera el wiki de la aplicación para las ramas template'
+
+inputs:
+  commit_short:
+    description: 'Commit short hash'
+    required: true
+  image_size:
+    description: 'Docker image size'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Extract module name
+      id: module-name
+      run: |
+        # Extraer el nombre real del módulo de la rama
+        branch_name="${{ github.ref }}"
+        module=$(echo "$branch_name" | awk -F/ '{print $NF}')
+        echo "module=$module" >> "$GITHUB_OUTPUT"
+        echo "Full module path=${branch_name#refs/heads/}" >> "$GITHUB_STEP_SUMMARY"
+    - name: Update wiki page
+      run: |
+        module="${{ steps.module-name.outputs.module }}"
+        version="v$(date +'%Y.%m.%d')"
+        page_path="wiki/Docker-Sizes-$module.md"
+
+        echo "Updating wiki page for module: $module"
+
+        # Crear encabezado si es la primera ejecución
+        if [ ! -f "$page_path" ]; then
+          echo "# Docker Image Size History: $module" > "$page_path"
+          echo "" >> "$page_path"
+        fi
+
+        # Leer contenido existente
+        existing_content=$(cat "$page_path")
+
+        # Añadir nueva entrada manteniendo el historial
+        {
+          echo "# Docker Image Size History: $module"
+          echo ""
+          echo "## Version: $version"
+          echo "**Branch**: ${{ github.ref_name }}"
+          echo ""
+          echo "**Commit**: [${{ commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+          echo ""
+          echo "**Size**: ${{ image_size }}"
+          echo ""
+          echo "**Updated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
+          echo "---"
+          echo ""
+          echo "$existing_content" | awk 'NR>2'  # Saltar las primeras 2 líneas (encabezado)
+        } > "$page_path"
+    - name: Commit to wiki
+      run: |
+        cd wiki
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add .
+        git commit -m "Update docker size: ${{ steps.module-name.outputs.module }} (${{ commit_short }})"
+        git push

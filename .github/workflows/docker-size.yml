@@ -85,13 +85,61 @@ jobs:
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/template/') }}
     needs: calculate-head
     steps:
+      - name: Extract module name
+        id: module-name
+        run: |
+          # Extraer el nombre real del módulo de la rama
+          branch_name="${{ github.ref }}"
+          module=$(echo "$branch_name" | awk -F/ '{print $NF}')
+          echo "module=$module" >> "$GITHUB_OUTPUT"
+          echo "Full module path=${branch_name#refs/heads/}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout wiki
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki
-      - name: Setup Wiki Template
-        uses: ./.github/actions/setup-wiki
-        with:
-          commit_short: ${{ needs.calculate-head.outputs.commit_short }}
-          image_size: ${{ needs.calculate-head.outputs.image_size }}
+
+      - name: Update wiki page
+        run: |
+          module="${{ steps.module-name.outputs.module }}"
+          version="v$(date +'%Y.%m.%d')"
+          page_path="wiki/Docker-Sizes-$module.md"
+
+          echo "Updating wiki page for module: $module"
+
+          # Crear encabezado si es la primera ejecución
+          if [ ! -f "$page_path" ]; then
+            echo "# Docker Image Size History: $module" > "$page_path"
+            echo "" >> "$page_path"
+          fi
+
+          # Leer contenido existente
+          existing_content=$(cat "$page_path")
+
+          # Añadir nueva entrada manteniendo el historial
+          {
+            echo "# Docker Image Size History: $module"
+            echo ""
+            echo "## Version: $version"
+            echo "**Branch**: ${{ github.ref_name }}"
+            echo ""
+            echo "**Commit**: [${{ needs.calculate-head.outputs.commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+            echo ""
+            echo "**Size**: ${{ needs.calculate-head.outputs.image_size }}"
+            echo ""
+            echo "**Updated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo ""
+            echo "---"
+            echo ""
+            echo "$existing_content" | awk 'NR>2'  # Saltar las primeras 2 líneas (encabezado)
+          } > "$page_path"
+
+      - name: Commit to wiki
+        run: |
+          cd wiki
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update docker size: ${{ steps.module-name.outputs.module }} (${{ needs.calculate-head.outputs.commit_short }})"
+          git push

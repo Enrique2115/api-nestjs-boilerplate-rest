@@ -101,14 +101,16 @@ jobs:
         run: |
           version="v$(date +'%Y.%m.%d')"
           page_path="wiki/Docker-Sizes-${{ steps.module-name.outputs.module }}.md"
+
+          {
+            echo "# Docker Image Size: ${{ steps.module-name.outputs.module }} ($version)"
+            echo "## 🐳 Image Metrics"
+            echo "**Branch**: ${{ github.ref_name }}"
+            echo "**Commit**: [${{ needs.calculate-head.outputs.commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+            echo "**Size**: ${{ needs.calculate-head.outputs.image_size }}"
+            echo "**Last updated**: $(date)"
+          } > "$page_path"
           
-          echo "# Docker Image Size: ${{ steps.module-name.outputs.module }} ($version)" > "$page_path"
-          echo "## 🐳 Image Metrics" >> "$page_path"
-          echo "**Branch**: ${{ github.ref_name }}" >> "$page_path"
-          echo "**Commit**: [${{ needs.calculate-head.outputs.commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" >> "$page_path"
-          echo "**Size**: ${{ needs.calculate-head.outputs.image_size }}" >> "$page_path"
-          echo "**Last updated**: $(date)" >> "$page_path"
-      
       - name: Commit to wiki
         run: |
           cd wiki

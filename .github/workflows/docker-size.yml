@@ -3,13 +3,18 @@ name: '🐳 Docker size'
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'template/**'
 
 permissions:
   pull-requests: write
+  contents: write
 
 jobs:
   calculate-base:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
     outputs:
       image_size: ${{ steps.docker-base.outputs.image_size }}
     steps:
@@ -43,10 +48,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_size: ${{ steps.docker-head.outputs.image_size }}
+      commit_short: ${{ steps.get-commit.outputs.short }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+      - name: Get commit short hash
+        id: get-commit
+        run: |
+          short=$(git rev-parse --short HEAD)
+          echo "short=$short" >> "$GITHUB_OUTPUT"
       - name: 🐳 Calculate docker image size in ${{ github.head_ref }}
         id: docker-head
         run: |
@@ -55,6 +66,7 @@ jobs:
           echo "image_size=$image_size" >> "$GITHUB_OUTPUT"
   write-comment:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
     needs: [calculate-base, calculate-head]
     steps:
       - uses: marocchino/sticky-pull-request-comment@v2
@@ -68,3 +80,40 @@ jobs:
 
             * Size of the Docker Image in the base (${{ github.base_ref }}): **${{ env.BASE_DOCKER_IMAGE_SIZE }}**
             * Size of the Docker Image in this branch (${{ github.head_ref }}): **${{ env.HEAD_DOCKER_IMAGE_SIZE }}**
+  update-wiki:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/template/') }}
+    needs: calculate-head
+    steps:
+      - name: Extract module name
+        id: module-name
+        run: |
+          module=$(echo "${{ github.ref }}" | awk -F/ '{print $3}')
+          echo "module=$module" >> "$GITHUB_OUTPUT"
+      
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+      
+      - name: Update wiki page
+        run: |
+          version="v$(date +'%Y.%m.%d')"
+          page_path="wiki/Docker-Sizes-${{ steps.module-name.outputs.module }}.md"
+          
+          echo "# Docker Image Size: ${{ steps.module-name.outputs.module }} ($version)" > "$page_path"
+          echo "## 🐳 Image Metrics" >> "$page_path"
+          echo "**Branch**: ${{ github.ref_name }}" >> "$page_path"
+          echo "**Commit**: [${{ needs.calculate-head.outputs.commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" >> "$page_path"
+          echo "**Size**: ${{ needs.calculate-head.outputs.image_size }}" >> "$page_path"
+          echo "**Last updated**: $(date)" >> "$page_path"
+      
+      - name: Commit to wiki
+        run: |
+          cd wiki
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Update docker size: ${{ steps.module-name.outputs.module }} (${{ needs.calculate-head.outputs.commit_short }})"
+          git push

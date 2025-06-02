@@ -71,7 +71,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/buffer-to-stream": "^1.0.3",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.17.51",
+    "@types/node": "^22.15.29",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/parser": "^8.33.0",

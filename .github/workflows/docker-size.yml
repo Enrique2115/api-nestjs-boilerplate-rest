@@ -88,29 +88,53 @@ jobs:
       - name: Extract module name
         id: module-name
         run: |
-          module=$(echo "${{ github.ref }}" | awk -F/ '{print $3}')
+          # Extraer el nombre real del módulo de la rama
+          branch_name="${{ github.ref }}"
+          module=$(echo "$branch_name" | awk -F/ '{print $NF}')
           echo "module=$module" >> "$GITHUB_OUTPUT"
-      
+          echo "Full module path=${branch_name#refs/heads/}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout wiki
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki
-      
+
       - name: Update wiki page
         run: |
+          module="${{ steps.module-name.outputs.module }}"
           version="v$(date +'%Y.%m.%d')"
-          page_path="wiki/Docker-Sizes-${{ steps.module-name.outputs.module }}.md"
+          page_path="wiki/Docker-Sizes-$module.md"
 
+          echo "Updating wiki page for module: $module"
+
+          # Crear encabezado si es la primera ejecución
+          if [ ! -f "$page_path" ]; then
+            echo "# Docker Image Size History: $module" > "$page_path"
+            echo "" >> "$page_path"
+          fi
+
+          # Leer contenido existente
+          existing_content=$(cat "$page_path")
+
+          # Añadir nueva entrada manteniendo el historial
           {
-            echo "# Docker Image Size: ${{ steps.module-name.outputs.module }} ($version)"
-            echo "## 🐳 Image Metrics"
+            echo "# Docker Image Size History: $module"
+            echo ""
+            echo "## Version: $version"
             echo "**Branch**: ${{ github.ref_name }}"
+            echo ""
             echo "**Commit**: [${{ needs.calculate-head.outputs.commit_short }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+            echo ""
             echo "**Size**: ${{ needs.calculate-head.outputs.image_size }}"
-            echo "**Last updated**: $(date)"
+            echo ""
+            echo "**Updated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo ""
+            echo "---"
+            echo ""
+            echo "$existing_content" | awk 'NR>2'  # Saltar las primeras 2 líneas (encabezado)
           } > "$page_path"
-          
+
       - name: Commit to wiki
         run: |
           cd wiki

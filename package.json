@@ -23,7 +23,8 @@
     "calculate-global-test-coverage": "tsx scripts/calculate-global-test-coverage.ts",
     "prebuild": "rimraf dist; exit 0",
     "build": "nest build --path tsconfig.build.json",
-    "clean": "rimraf .nyc_output coverage dist node_modules; exit 0",
+    "clean": "git clean -xdf .nyc_output coverage dist node_modules",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "prepare": "husky || true"
   },
   "dependencies": {

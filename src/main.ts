@@ -9,9 +9,9 @@ import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { API, envs, swaggerConfig } from './config';
-import { LoggerInterceptor } from './infra/logger/logger.interceptor';
-import { ErrorResponseNormalizerFilter } from './infra/response-normalizer/error-response.filter';
-import { SuccessResponseNormalizerInterceptor } from './infra/response-normalizer/success-response.interceptor';
+import { LoggerInterceptor } from './core/infra/logger/logger.interceptor';
+import { ErrorResponseNormalizerFilter } from './core/infra/response-normalizer/error-response.filter';
+import { SuccessResponseNormalizerInterceptor } from './core/infra/response-normalizer/success-response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(

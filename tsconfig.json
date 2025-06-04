@@ -16,10 +16,11 @@
     "sourceMap": true,
     "target": "esnext",
     "paths": {
-      "@src/*": ["src/*"],
-      "@core/*": ["src/core/*"],
-      "@infra/*": ["src/infra/*"],
-      "@tests/*": ["tests/*"]
+      "@/src/*": ["src/*"],
+      "@/core/*": ["src/core/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/infra/*": ["src/core/infra/*"],
+      "@/tests/*": ["tests/*"]
     },
     "types": ["vitest/globals"]
   },

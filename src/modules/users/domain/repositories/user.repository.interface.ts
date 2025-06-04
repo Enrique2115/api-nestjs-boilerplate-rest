@@ -1,4 +1,4 @@
-import { User } from '@modules/users/domain';
+import { User } from '@/modules/users/domain';
 
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;

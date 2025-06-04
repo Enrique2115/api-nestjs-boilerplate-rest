@@ -1,7 +1,8 @@
-import { IPermissionRepository, Permission } from '@modules/permission/domain';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { IPermissionRepository, Permission } from '@/modules/permission/domain';
 
 @Injectable()
 export class PermissionRepository implements IPermissionRepository {

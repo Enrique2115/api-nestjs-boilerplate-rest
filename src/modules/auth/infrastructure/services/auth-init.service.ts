@@ -1,13 +1,14 @@
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+
 import {
   DEFAULT_PERMISSIONS,
   DEFAULT_ROLES,
   ROLE_PERMISSIONS,
-} from '@modules/auth/domain';
-import { PermissionRepository } from '@modules/permission/infrastructure';
-import { RoleRepository } from '@modules/roles/infrastructure';
-import { UserRepository } from '@modules/users/infrastructure';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
+} from '@/modules/auth/domain';
+import { PermissionRepository } from '@/modules/permission/infrastructure';
+import { RoleRepository } from '@/modules/roles/infrastructure';
+import { UserRepository } from '@/modules/users/infrastructure';
 
 @Injectable()
 export class AuthInitService implements OnModuleInit {

@@ -1,29 +1,30 @@
-// Auth
-import { AuthUseCase, JwtStrategy } from '@modules/auth/application';
-import { AuthInitService, JwtService } from '@modules/auth/infrastructure';
-import { AuthController } from '@modules/auth/presentation';
-// Permissions
-import { PermissionUseCase } from '@modules/permission/application';
-import { Permission } from '@modules/permission/domain';
-import { PermissionRepository } from '@modules/permission/infrastructure';
-import { PermissionsController } from '@modules/permission/presentation';
-// Roles
-import { RoleUseCase } from '@modules/roles/application';
-import { Role } from '@modules/roles/domain';
-import { RoleRepository } from '@modules/roles/infrastructure';
-import { RolesController } from '@modules/roles/presentation';
-// Users
-import { UserUseCase } from '@modules/users/application';
-import { User } from '@modules/users/domain';
-import { UserRepository } from '@modules/users/infrastructure';
-import { UsersController } from '@modules/users/presentation';
 // Nest
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { envs } from '@src/config';
+import { envs } from '@/src/config';
+
+// Auth
+import { AuthUseCase, JwtStrategy } from '@/modules/auth/application';
+import { AuthInitService, JwtService } from '@/modules/auth/infrastructure';
+import { AuthController } from '@/modules/auth/presentation';
+// Permissions
+import { PermissionUseCase } from '@/modules/permission/application';
+import { Permission } from '@/modules/permission/domain';
+import { PermissionRepository } from '@/modules/permission/infrastructure';
+import { PermissionsController } from '@/modules/permission/presentation';
+// Roles
+import { RoleUseCase } from '@/modules/roles/application';
+import { Role } from '@/modules/roles/domain';
+import { RoleRepository } from '@/modules/roles/infrastructure';
+import { RolesController } from '@/modules/roles/presentation';
+// Users
+import { UserUseCase } from '@/modules/users/application';
+import { User } from '@/modules/users/domain';
+import { UserRepository } from '@/modules/users/infrastructure';
+import { UsersController } from '@/modules/users/presentation';
 
 @Module({
   imports: [

@@ -1,4 +1,4 @@
-import { Role } from '@modules/roles/domain';
+import { Role } from '@/modules/roles/domain';
 
 export interface IRoleRepository {
   findById(id: string): Promise<Role | null>;

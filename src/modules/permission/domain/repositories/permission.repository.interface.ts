@@ -1,4 +1,4 @@
-import { Permission } from '@modules/permission/domain';
+import { Permission } from '@/modules/permission/domain';
 
 export interface IPermissionRepository {
   findById(id: string): Promise<Permission | null>;

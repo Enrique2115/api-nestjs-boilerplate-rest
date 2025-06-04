@@ -1,8 +1,9 @@
-import { Permission } from '@modules/permission/domain';
-import { IRoleRepository, Role } from '@modules/roles/domain';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Permission } from '@/modules/permission/domain';
+import { IRoleRepository, Role } from '@/modules/roles/domain';
 
 @Injectable()
 export class RoleRepository implements IRoleRepository {

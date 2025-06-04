@@ -1,8 +1,9 @@
-import { Role } from '@modules/roles/domain';
-import { IUserRepository, User } from '@modules/users/domain';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Role } from '@/modules/roles/domain';
+import { IUserRepository, User } from '@/modules/users/domain';
 
 @Injectable()
 export class UserRepository implements IUserRepository {

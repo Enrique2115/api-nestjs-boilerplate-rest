@@ -1,13 +1,3 @@
-import { JwtAuthGuard } from '@modules/auth/application';
-import { Permissions, PermissionsGuard } from '@modules/permission/application';
-import { Roles, RolesGuard } from '@modules/roles/application';
-import {
-  AssignRoleDto,
-  CreateUserDto,
-  CurrentUser,
-  UpdateUserDto,
-  UserUseCase,
-} from '@modules/users/application';
 import {
   Body,
   Controller,
@@ -28,6 +18,20 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/modules/auth/application';
+import {
+  Permissions,
+  PermissionsGuard,
+} from '@/modules/permission/application';
+import { Roles, RolesGuard } from '@/modules/roles/application';
+import {
+  AssignRoleDto,
+  CreateUserDto,
+  CurrentUser,
+  UpdateUserDto,
+  UserUseCase,
+} from '@/modules/users/application';
 
 @ApiTags('Users')
 @Controller('users')

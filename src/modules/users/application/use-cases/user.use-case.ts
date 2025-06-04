@@ -1,7 +1,8 @@
-import { IRoleRepository } from '@modules/roles/domain';
-import { CreateUserDto, UpdateUserDto } from '@modules/users/application';
-import { IUserRepository, User } from '@modules/users/domain';
 import * as bcrypt from 'bcryptjs';
+
+import { IRoleRepository } from '@/modules/roles/domain';
+import { CreateUserDto, UpdateUserDto } from '@/modules/users/application';
+import { IUserRepository, User } from '@/modules/users/domain';
 
 export class UserUseCase {
   constructor(

@@ -1,4 +1,3 @@
-import { Role } from '@modules/roles/domain';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Role } from '@/modules/roles/domain';
 
 @Entity('users')
 export class User {

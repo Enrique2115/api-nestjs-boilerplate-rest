@@ -1,8 +1,8 @@
 import {
   CreatePermissionDto,
   UpdatePermissionDto,
-} from '@modules/permission/application';
-import { IPermissionRepository, Permission } from '@modules/permission/domain';
+} from '@/modules/permission/application';
+import { IPermissionRepository, Permission } from '@/modules/permission/domain';
 
 export class PermissionUseCase {
   constructor(private readonly permissionRepository: IPermissionRepository) {}

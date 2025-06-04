@@ -1,11 +1,12 @@
+import * as bcrypt from 'bcryptjs';
+
 import {
   AuthResult,
   IJwtService,
   LoginDto,
   RegisterDto,
-} from '@modules/auth/application';
-import { IUserRepository, User } from '@modules/users/domain';
-import * as bcrypt from 'bcryptjs';
+} from '@/modules/auth/application';
+import { IUserRepository, User } from '@/modules/users/domain';
 
 export class AuthUseCase {
   constructor(

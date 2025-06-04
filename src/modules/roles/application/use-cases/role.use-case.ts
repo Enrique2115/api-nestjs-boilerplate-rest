@@ -1,6 +1,6 @@
-import { IPermissionRepository } from '@modules/permission/domain';
-import { CreateRoleDto, UpdateRoleDto } from '@modules/roles/application';
-import { IRoleRepository, Role } from '@modules/roles/domain';
+import { IPermissionRepository } from '@/modules/permission/domain';
+import { CreateRoleDto, UpdateRoleDto } from '@/modules/roles/application';
+import { IRoleRepository, Role } from '@/modules/roles/domain';
 
 export class RoleUseCase {
   constructor(

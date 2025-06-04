@@ -1,4 +1,4 @@
-import { User } from '@modules/users/domain';
+import { User } from '@/modules/users/domain';
 
 export interface AuthResult {
   user: User;

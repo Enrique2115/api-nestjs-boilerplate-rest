@@ -1,13 +1,4 @@
 import {
-  AuthenticatedUser,
-  AuthUseCase,
-  ChangePasswordDto,
-  JwtAuthGuard,
-  LoginDto,
-  RegisterDto,
-} from '@modules/auth/application';
-import { CurrentUser } from '@modules/users/application';
-import {
   Body,
   Controller,
   HttpCode,
@@ -21,6 +12,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
+import {
+  AuthenticatedUser,
+  AuthUseCase,
+  ChangePasswordDto,
+  JwtAuthGuard,
+  LoginDto,
+  RegisterDto,
+} from '@/modules/auth/application';
+import { CurrentUser } from '@/modules/users/application';
 
 @ApiTags('Authentication')
 @Controller('auth')

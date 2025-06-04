@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
+import { AuthModule } from './core/auth/auth.module';
 import { HealthModule } from './core/health/health.module';
 import { RedisModule } from './core/redis/redis.module';
 import { DatabaseModule } from './infra/database/database.module';
@@ -10,6 +11,7 @@ import { CorrelationIdMiddleware } from './infra/shared/middleware/correlation-i
 @Module({
   imports: [
     DatabaseModule,
+    AuthModule,
     LoggerModule,
     ResponseNormalizerModule,
     HealthModule,

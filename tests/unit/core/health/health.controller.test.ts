@@ -1,8 +1,8 @@
 import { Logger } from 'nestjs-pino';
 
-import { HealthController } from '@src/core/health/health.controller';
+import { HealthController } from '@/src/core/health/health.controller';
 
-import { createMock, Mock } from '@tests/utils/mock';
+import { createMock, Mock } from '@/tests/utils/mock';
 
 describe('HealthController', () => {
   let controller: HealthController;

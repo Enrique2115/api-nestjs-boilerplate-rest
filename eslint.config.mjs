@@ -74,10 +74,11 @@ export default [
             // External packages
             [String.raw`^@?\w`],
             // Internal packages - usando tus paths del tsconfig
-            ['^@src(/.*|$)'],
-            ['^@core(/.*|$)'],
-            ['^@infra(/.*|$)'],
-            ['^@tests(/.*|$)'],
+            ['^@/src(/.*|$)'],
+            ['^@/core(/.*|$)'],
+            ['^@/modules(/.*|$)'],
+            ['^@/infra(/.*|$)'],
+            ['^@/tests(/.*|$)'],
             // Other imports
             ['^'],
             // Relative imports

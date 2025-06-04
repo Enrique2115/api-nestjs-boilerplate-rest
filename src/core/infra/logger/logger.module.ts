@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 
-import { envs } from '@src/config';
+import { envs } from '@/src/config';
 
 import { LoggerInterceptor } from './logger.interceptor';
 import { LoggerStrategy } from './logger.strategy';

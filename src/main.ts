@@ -1,3 +1,6 @@
+import fastifyCors from '@fastify/cors';
+import fastifyCsrfProtection from '@fastify/csrf-protection';
+import helmet from '@fastify/helmet';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -8,7 +11,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
-import { API, envs, swaggerConfig } from './config';
+import { API, envs, METHODS, swaggerConfig } from './config';
 import { LoggerInterceptor } from './core/infra/logger/logger.interceptor';
 import { ErrorResponseNormalizerFilter } from './core/infra/response-normalizer/error-response.filter';
 import { SuccessResponseNormalizerInterceptor } from './core/infra/response-normalizer/success-response.interceptor';
@@ -21,7 +24,18 @@ async function bootstrap() {
   );
 
   app.useLogger(app.get(Logger));
+  // TODO: Update new version @nestjs/pino
+  //  Se debe esperar la nueva version de @nestjs/pino para solventar warning unsupported route path
+  //  ISSUE REFERENCE: https://github.com/iamolegga/nestjs-pino/issues/2213
+  //  PR: https://github.com/iamolegga/nestjs-pino/pull/2283
   app.setGlobalPrefix(API);
+  app.register(helmet);
+  app.register(fastifyCsrfProtection, { cookieOpts: { signed: true } });
+  app.register(fastifyCors, {
+    methods: METHODS,
+    credentials: true,
+    origin: true,
+  });
 
   app.useGlobalFilters(app.get(ErrorResponseNormalizerFilter));
   app.useGlobalInterceptors(
@@ -39,7 +53,7 @@ async function bootstrap() {
 
   // Swagger Config
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('docs', app, document, {
     swaggerOptions: { persistAuthorization: true },
   });
 

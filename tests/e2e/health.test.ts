@@ -38,6 +38,14 @@ describe('Health', () => {
   it('GET /health', async () => {
     const response = await request(app.getHttpServer()).get('/health');
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: 'ok' });
+    expect(response.body).toMatchObject({
+      status: 'ok',
+      info: expect.any(Object),
+      error: expect.any(Object),
+      details: expect.any(Object),
+    });
+    expect(response.body.details.database).toMatchObject({
+      status: 'up',
+    });
   });
 });

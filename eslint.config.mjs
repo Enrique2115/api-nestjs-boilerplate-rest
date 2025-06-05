@@ -188,6 +188,7 @@ export default [
       'node_modules/*',
       'dist/*',
       'coverage/*',
+      'documentation/*',
       'pnpm-lock.yaml',
       '.gitignore',
       '*.log',

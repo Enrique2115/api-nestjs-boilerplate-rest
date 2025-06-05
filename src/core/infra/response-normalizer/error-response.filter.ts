@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  ForbiddenException,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -77,6 +78,12 @@ export class ErrorResponseNormalizerFilter implements ExceptionFilter {
 
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         message = `${error.message} Stack: ${path}`;
+        break;
+      }
+      case ForbiddenException: {
+        status = HttpStatus.FORBIDDEN;
+        message = (exception as ForbiddenException).message;
+        code = (exception as unknown as { code: string }).code;
         break;
       }
       default: {

@@ -25,6 +25,7 @@ export const usersPaginateConfig: PaginateConfig<User> = {
     'isActive',
     'createdAt',
     'roles.name',
+    'roles.permissions.id',
     'roles.permissions.name',
   ],
 };

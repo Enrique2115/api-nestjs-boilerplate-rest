@@ -18,6 +18,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  ApiPaginationQuery,
+  Paginate,
+  Paginated,
+  PaginateQuery,
+} from 'nestjs-paginate';
 
 import { JwtAuthGuard } from '@/modules/auth/application';
 import {
@@ -32,6 +38,7 @@ import {
   UpdateUserDto,
   UserUseCase,
 } from '@/modules/users/application';
+import { User, usersPaginateConfig } from '@/modules/users/domain';
 
 @ApiTags('Users')
 @Controller('users')
@@ -69,16 +76,11 @@ export class UsersController {
     status: 403,
     description: 'Forbidden - users:read permission required',
   })
-  async getAllUsers() {
-    try {
-      const users = await this.userUseCase.getAllUsers();
-      return {
-        message: 'Users retrieved successfully',
-        data: users,
-      };
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  @ApiPaginationQuery(usersPaginateConfig)
+  async getAllUsers(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<User>> {
+    return await this.userUseCase.getAllUsersPaginated(query);
   }
 
   @Get('me')

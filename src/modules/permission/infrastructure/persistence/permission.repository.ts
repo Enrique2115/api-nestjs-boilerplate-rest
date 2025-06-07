@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Repository } from 'typeorm';
 
-import { IPermissionRepository, Permission } from '@/modules/permission/domain';
+import {
+  IPermissionRepository,
+  Permission,
+  permissionsPaginateConfig,
+} from '@/modules/permission/domain';
 
 @Injectable()
 export class PermissionRepository implements IPermissionRepository {
@@ -25,8 +30,12 @@ export class PermissionRepository implements IPermissionRepository {
     return permission || undefined;
   }
 
-  async findAll(): Promise<Permission[]> {
-    return await this.permissionRepository.find();
+  async findAllPaginated(query: PaginateQuery): Promise<Paginated<Permission>> {
+    return paginate(
+      query,
+      this.permissionRepository,
+      permissionsPaginateConfig,
+    );
   }
 
   async create(permissionData: Partial<Permission>): Promise<Permission> {

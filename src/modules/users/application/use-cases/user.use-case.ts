@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import { Paginated, PaginateQuery } from 'nestjs-paginate';
 
 import { IRoleRepository } from '@/modules/roles/domain';
 import { CreateUserDto, UpdateUserDto } from '@/modules/users/application';
@@ -47,8 +48,8 @@ export class UserUseCase {
     return await this.userRepository.findByEmail(email);
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return await this.userRepository.findAll();
+  async getAllUsersPaginated(query: PaginateQuery): Promise<Paginated<User>> {
+    return await this.userRepository.findAllPaginated(query);
   }
 
   async updateUser(

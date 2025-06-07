@@ -18,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 import { JwtAuthGuard } from '@/modules/auth/application';
 import {
@@ -25,6 +26,7 @@ import {
   PermissionUseCase,
   UpdatePermissionDto,
 } from '@/modules/permission/application';
+import { Permission } from '@/modules/permission/domain';
 import { Roles, RolesGuard } from '@/modules/roles/application';
 
 @ApiTags('Permissions')
@@ -61,16 +63,10 @@ export class PermissionsController {
     description: 'Permissions retrieved successfully',
   })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
-  async getAllPermissions() {
-    try {
-      const permissions = await this.permissionUseCase.getAllPermissions();
-      return {
-        message: 'Permissions retrieved successfully',
-        data: permissions,
-      };
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  async getAllPermissions(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Permission>> {
+    return await this.permissionUseCase.getAllPermissionsPaginated(query);
   }
 
   @Get(':id')

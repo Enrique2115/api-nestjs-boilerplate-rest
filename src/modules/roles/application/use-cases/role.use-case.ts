@@ -1,3 +1,5 @@
+import { Paginated, PaginateQuery } from 'nestjs-paginate';
+
 import { IPermissionRepository } from '@/modules/permission/domain';
 import { CreateRoleDto, UpdateRoleDto } from '@/modules/roles/application';
 import { IRoleRepository, Role } from '@/modules/roles/domain';
@@ -44,8 +46,8 @@ export class RoleUseCase {
     return await this.roleRepository.findByName(name);
   }
 
-  async getAllRoles(): Promise<Role[]> {
-    return await this.roleRepository.findAll();
+  async getAllRolesPaginated(query: PaginateQuery): Promise<Paginated<Role>> {
+    return await this.roleRepository.findAllPaginated(query);
   }
 
   async updateRole(

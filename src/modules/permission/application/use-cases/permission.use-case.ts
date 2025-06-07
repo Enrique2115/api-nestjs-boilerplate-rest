@@ -1,3 +1,5 @@
+import { Paginated, PaginateQuery } from 'nestjs-paginate';
+
 import {
   CreatePermissionDto,
   UpdatePermissionDto,
@@ -32,8 +34,10 @@ export class PermissionUseCase {
     return await this.permissionRepository.findByName(name);
   }
 
-  async getAllPermissions(): Promise<Permission[]> {
-    return await this.permissionRepository.findAll();
+  async getAllPermissionsPaginated(
+    query: PaginateQuery,
+  ): Promise<Paginated<Permission>> {
+    return await this.permissionRepository.findAllPaginated(query);
   }
 
   async updatePermission(

@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Repository } from 'typeorm';
 
 import { Role } from '@/modules/roles/domain';
 import { IUserRepository, User } from '@/modules/users/domain';
+
+import { usersPaginateConfig } from '../../domain/pagination';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -30,10 +33,8 @@ export class UserRepository implements IUserRepository {
     return user || undefined;
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({
-      relations: ['roles', 'roles.permissions'],
-    });
+  async findAllPaginated(query: PaginateQuery): Promise<Paginated<User>> {
+    return paginate(query, this.userRepository, usersPaginateConfig);
   }
 
   async create(userData: Partial<User>): Promise<User> {

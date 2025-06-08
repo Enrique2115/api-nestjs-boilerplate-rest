@@ -10,4 +10,5 @@ export interface JwtPayload {
 export interface IJwtService {
   sign(payload: JwtPayload): string;
   verify(token: string): JwtPayload;
+  decode(token: string): JwtPayload | undefined;
 }

@@ -176,6 +176,7 @@ export default [
     rules: {
       'no-console': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
     },
   },
 

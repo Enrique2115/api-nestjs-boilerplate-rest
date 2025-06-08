@@ -15,7 +15,9 @@ export class JwtService implements IJwtService {
     return this.jwtService.verify(token);
   }
 
-  decode(token: string): JwtPayload | null {
-    return this.jwtService.decode(token) as JwtPayload | null;
+  decode(token: string): JwtPayload | undefined {
+    return (
+      (this.jwtService.decode(token) as JwtPayload | undefined) || undefined
+    );
   }
 }

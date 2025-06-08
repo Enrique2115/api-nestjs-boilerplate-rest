@@ -22,6 +22,7 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 ## ✨ Características
 
 ### 🏗️ Arquitectura
+
 - **NestJS 11+** - Framework progresivo de Node.js
 - **TypeScript** - Tipado estático para mayor robustez
 - **Fastify** - Servidor web de alto rendimiento
@@ -29,18 +30,21 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 - **PostgreSQL** - Base de datos relacional
 
 ### 🔒 Seguridad
+
 - **Helmet** - Protección de headers HTTP
 - **CORS** - Configuración de Cross-Origin Resource Sharing
 - **CSRF Protection** - Protección contra ataques CSRF
 - **Validación de datos** - Con class-validator y class-transformer
 
 ### 🧪 Testing
+
 - **Vitest** - Framework de testing moderno y rápido
 - **Cobertura de código** - Reportes detallados con Istanbul
 - **Tests E2E** - Pruebas de extremo a extremo
 - **Tests unitarios** - Pruebas aisladas de componentes
 
 ### 🛠️ Herramientas de Desarrollo
+
 - **ESLint** - Linting de código
 - **Prettier** - Formateo automático de código
 - **Husky** - Git hooks para calidad de código
@@ -49,11 +53,13 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 - **Pino Logger** - Sistema de logging estructurado
 
 ### 📦 Gestión de Dependencias
+
 - **PNPM** - Gestor de paquetes eficiente
 - **Docker** - Containerización
 - **GitHub Actions** - CI/CD automatizado
 
 ### ⚡ Performance
+
 - **Redis** - Cache en memoria
 - **Compresión** - Optimización de respuestas
 - **Health Checks** - Monitoreo de salud de la aplicación
@@ -70,39 +76,50 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 ### Instalación
 
 1. **Clona el repositorio**
+
    ```bash
    git clone https://github.com/Enrique2115/api-nestjs-boilerplate-rest.git
    cd api-nestjs-boilerplate-rest
    ```
 
 2. **Instala las dependencias**
+
    ```bash
    pnpm install
    ```
 
 3. **Configura las variables de entorno**
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Edita el archivo `.env` con tus configuraciones:
+
    ```env
    APP_NAME=API-NestJS-Boilerplate
    NODE_ENV=development
    HOST=0.0.0.0
    PORT=3001
-   
-   # CLOUDINARY (opcional)
-   API_NAME=tu_api_name
-   API_KEY=tu_api_key
-   API_SECRET=tu_api_secret
+
+   # REDIS
+   REDIS_HOST=tu_redis_host
+   REDIS_USERNAME=default
+   REDIS_PASSWORD=tu_api_password
+   REDIS_PORT=6379
+
+   # BD
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+   # DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
+   DATABASE_TYPE=postgres # Para usar con docker compose
    ```
 
 4. **Ejecuta la aplicación**
+
    ```bash
    # Modo desarrollo
    pnpm run dev
-   
+
    # Modo producción
    pnpm run build
    pnpm run start:prod
@@ -113,14 +130,17 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 ### Desarrollo con Docker Compose
 
 ```bash
-# Levantar todos los servicios
-docker-compose up -d
+# Levantar servicio en producción
+docker compose up -d production
+
+# Levantar Servicio en desarrollo
+docker compose up -d development
 
 # Ver logs
-docker-compose logs -f
+docker compose logs -f
 
 # Detener servicios
-docker-compose down
+docker compose down
 ```
 
 ### Build de imagen Docker
@@ -187,11 +207,13 @@ tests/
 ## 🌐 API Endpoints
 
 ### Health Check
+
 - `GET /health` - Estado de la aplicación
 - `GET /health/database` - Estado de la base de datos
 - `GET /health/redis` - Estado de Redis
 
 ### Documentación
+
 - `GET /api` - Swagger UI (solo en desarrollo)
 - `GET /api-json` - Especificación OpenAPI JSON
 
@@ -199,15 +221,12 @@ tests/
 
 ### Variables de Entorno
 
-| Variable | Descripción | Valor por defecto |
-|----------|-------------|-------------------|
+| Variable   | Descripción             | Valor por defecto        |
+| ---------- | ----------------------- | ------------------------ |
 | `APP_NAME` | Nombre de la aplicación | `API-NestJS-Boilerplate` |
-| `NODE_ENV` | Entorno de ejecución | `development` |
-| `HOST` | Host del servidor | `0.0.0.0` |
-| `PORT` | Puerto del servidor | `3001` |
-| `API_NAME` | Nombre API Cloudinary | - |
-| `API_KEY` | Clave API Cloudinary | - |
-| `API_SECRET` | Secret API Cloudinary | - |
+| `NODE_ENV` | Entorno de ejecución    | `development`            |
+| `HOST`     | Host del servidor       | `0.0.0.0`                |
+| `PORT`     | Puerto del servidor     | `3001`                   |
 
 ## 🧪 Testing
 
@@ -236,6 +255,7 @@ pnpm run test
 ### Swagger/OpenAPI
 
 La documentación de la API está disponible en:
+
 - **Desarrollo**: `http://localhost:3001/api`
 - **JSON Schema**: `http://localhost:3001/api-json`
 
@@ -255,30 +275,6 @@ pnpm run docss
 2. Haz clic en "Use this template"
 3. Selecciona "Create a new repository"
 4. Configura tu nuevo repositorio
-
-### Opción 2: GitHub CLI
-
-```bash
-# Crear repositorio desde template
-gh repo create mi-nueva-api --template Enrique2115/api-nestjs-boilerplate-rest
-
-# Clonar y configurar
-git clone https://github.com/tu-usuario/mi-nueva-api.git
-cd mi-nueva-api
-pnpm install
-```
-
-### Opción 3: Fork y Clone
-
-```bash
-# Fork del repositorio
-gh repo fork Enrique2115/api-nestjs-boilerplate-rest --clone
-
-# Renombrar y configurar
-cd api-nestjs-boilerplate-rest
-git remote rename origin upstream
-git remote add origin https://github.com/tu-usuario/mi-nueva-api.git
-```
 
 ## 🔄 Workflow de Desarrollo
 
@@ -317,6 +313,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 ## 👨‍💻 Autor
 
 **Luis E. Morocho Febres**
+
 - GitHub: [@Enrique2115](https://github.com/Enrique2115)
 - Email: lmorochofebres@gmail.com
 
@@ -325,6 +322,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 - [NestJS](https://nestjs.com/) - El framework que hace posible este boilerplate
 - [Fastify](https://www.fastify.io/) - Por el rendimiento excepcional
 - [Vitest](https://vitest.dev/) - Por hacer el testing más rápido y sencillo
+- [AlbertHernandez](https://github.com/AlbertHernandez) - Por el template original
 
 ---
 

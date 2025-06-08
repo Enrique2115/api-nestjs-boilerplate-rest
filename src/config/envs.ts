@@ -10,6 +10,7 @@ interface EnvVars {
   REDIS_USERNAME: string;
   REDIS_PASSWORD: string;
   REDIS_PORT: number;
+  JWT_SECRET: string;
   DATABASE_TYPE: string;
   DATABASE_URL: string;
 }
@@ -23,6 +24,7 @@ const envsSchema = joi
     REDIS_USERNAME: joi.string().required(),
     REDIS_PASSWORD: joi.string().required(),
     REDIS_PORT: joi.number().required(),
+    JWT_SECRET: joi.string().required(),
     DATABASE_TYPE: joi.string().required(),
     DATABASE_URL: joi.string().required(),
   })
@@ -45,6 +47,9 @@ export const envs = {
     PORT: envVars.REDIS_PORT,
     USERNAME: envVars.REDIS_USERNAME,
     PASSWORD: envVars.REDIS_PASSWORD,
+  },
+  JWT: {
+    SECRET: envVars.JWT_SECRET,
   },
   DATABASE: {
     TYPE: envVars.DATABASE_TYPE,

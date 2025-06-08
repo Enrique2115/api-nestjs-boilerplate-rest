@@ -6,12 +6,10 @@ import { LoggerModule } from './core/infra/logger/logger.module';
 import { ResponseNormalizerModule } from './core/infra/response-normalizer/response-normalizer.module';
 import { CorrelationIdMiddleware } from './core/infra/shared/middleware/correlation-id.middleware';
 import { RedisModule } from './core/redis/redis.module';
-import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     DatabaseModule,
-    AuthModule,
     LoggerModule,
     ResponseNormalizerModule,
     HealthModule,

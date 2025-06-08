@@ -4,7 +4,6 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Paginated } from 'nestjs-paginate';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -18,16 +17,14 @@ export interface ResponseWithMessage<T> {
   data: T;
 }
 
-type PaginatedResponse = Paginated<unknown>;
-
 @Injectable()
 export class SuccessResponseNormalizerInterceptor<T>
-  implements NestInterceptor<T, Response<T> | T>
+  implements NestInterceptor<T, Response<T>>
 {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Observable<Response<T> | T> {
+  ): Observable<Response<T>> {
     return next.handle().pipe(
       map((response: T | ResponseWithMessage<T>) => {
         // Si la respuesta ya tiene la estructura { message, data }
@@ -36,10 +33,6 @@ export class SuccessResponseNormalizerInterceptor<T>
             message: response.message,
             data: response.data,
           };
-        }
-        // Si es una respuesta paginada, devolverla directamente sin envolver
-        if (this.isPaginatedResponse(response)) {
-          return response as T;
         }
         // Si es solo data, envolver en el formato estándar
         return {
@@ -58,21 +51,6 @@ export class SuccessResponseNormalizerInterceptor<T>
       'message' in response &&
       'data' in response &&
       typeof response.message === 'string'
-    );
-  }
-
-  private isPaginatedResponse(
-    response: unknown,
-  ): response is PaginatedResponse {
-    return (
-      response &&
-      typeof response === 'object' &&
-      'data' in response &&
-      'meta' in response &&
-      'links' in response &&
-      Array.isArray(response.data) &&
-      typeof response.meta === 'object' &&
-      typeof response.links === 'object'
     );
   }
 }

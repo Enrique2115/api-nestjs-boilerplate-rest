@@ -28,9 +28,14 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
 - **Fastify** - Servidor web de alto rendimiento
 - **TypeORM** - ORM para bases de datos
 - **PostgreSQL** - Base de datos relacional
+- **Arquitectura Hexagonal** - Separación clara de capas (Domain, Application, Infrastructure, Presentation)
 
-### 🔒 Seguridad
+### 🔒 Seguridad y Autenticación
 
+- **JWT Authentication** - Autenticación basada en tokens JWT
+- **RBAC (Role-Based Access Control)** - Control de acceso basado en roles y permisos
+- **Password Hashing** - Encriptación de contraseñas con bcrypt
+- **Guards y Decoradores** - Protección de rutas con guards personalizados
 - **Helmet** - Protección de headers HTTP
 - **CORS** - Configuración de Cross-Origin Resource Sharing
 - **CSRF Protection** - Protección contra ataques CSRF
@@ -101,6 +106,9 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
    NODE_ENV=development
    HOST=0.0.0.0
    PORT=3001
+
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-jwt-key-change-in-production
 
    # REDIS
    REDIS_HOST=tu_redis_host
@@ -193,10 +201,31 @@ src/
 │   ├── envs.ts          # Variables de entorno
 │   ├── redis.config.ts  # Configuración Redis
 │   └── swagger.config.ts # Configuración Swagger
-└── core/                 # Módulos core
-    ├── health/          # Health checks
-    ├── infra/           # Infraestructura
-    └── redis/           # Configuración Redis
+├── core/                 # Módulos core
+│   ├── health/          # Health checks
+│   ├── infra/           # Infraestructura
+│   └── redis/           # Configuración Redis
+└── modules/             # Módulos de dominio
+    ├── auth/            # Autenticación y autorización
+    │   ├── application/ # Casos de uso, DTOs, Guards
+    │   ├── domain/      # Entidades y constantes
+    │   ├── infrastructure/ # Servicios e implementaciones
+    │   └── presentation/   # Controladores
+    ├── users/           # Gestión de usuarios
+    │   ├── application/ # Casos de uso y DTOs
+    │   ├── domain/      # Entidades y repositorios
+    │   ├── infrastructure/ # Implementación de repositorios
+    │   └── presentation/   # Controladores
+    ├── roles/           # Gestión de roles
+    │   ├── application/ # Casos de uso, Guards y DTOs
+    │   ├── domain/      # Entidades y repositorios
+    │   ├── infrastructure/ # Implementación de repositorios
+    │   └── presentation/   # Controladores
+    └── permission/      # Gestión de permisos
+        ├── application/ # Casos de uso, Guards y DTOs
+        ├── domain/      # Entidades y repositorios
+        ├── infrastructure/ # Implementación de repositorios
+        └── presentation/   # Controladores
 
 tests/
 ├── e2e/                 # Tests end-to-end
@@ -212,6 +241,38 @@ tests/
 - `GET /health/database` - Estado de la base de datos
 - `GET /health/redis` - Estado de Redis
 
+### Autenticación
+
+- `POST /auth/login` - Iniciar sesión
+- `POST /auth/register` - Registrar nuevo usuario
+- `POST /auth/change-password` - Cambiar contraseña (requiere autenticación)
+
+### Gestión de Usuarios
+
+- `GET /users` - Listar usuarios (requiere permisos)
+- `POST /users` - Crear usuario (requiere permisos)
+- `GET /users/:id` - Obtener usuario por ID
+- `PUT /users/:id` - Actualizar usuario
+- `DELETE /users/:id` - Eliminar usuario
+- `POST /users/:id/assign-role` - Asignar rol a usuario
+
+### Gestión de Roles
+
+- `GET /roles` - Listar roles (solo admin)
+- `POST /roles` - Crear rol (solo admin)
+- `GET /roles/:id` - Obtener rol por ID
+- `PUT /roles/:id` - Actualizar rol
+- `DELETE /roles/:id` - Eliminar rol
+- `POST /roles/:id/assign-permission` - Asignar permiso a rol
+
+### Gestión de Permisos
+
+- `GET /permissions` - Listar permisos
+- `POST /permissions` - Crear permiso
+- `GET /permissions/:id` - Obtener permiso por ID
+- `PUT /permissions/:id` - Actualizar permiso
+- `DELETE /permissions/:id` - Eliminar permiso
+
 ### Documentación
 
 - `GET /api` - Swagger UI (solo en desarrollo)
@@ -221,12 +282,56 @@ tests/
 
 ### Variables de Entorno
 
-| Variable   | Descripción             | Valor por defecto        |
-| ---------- | ----------------------- | ------------------------ |
-| `APP_NAME` | Nombre de la aplicación | `API-NestJS-Boilerplate` |
-| `NODE_ENV` | Entorno de ejecución    | `development`            |
-| `HOST`     | Host del servidor       | `0.0.0.0`                |
-| `PORT`     | Puerto del servidor     | `3001`                   |
+| Variable       | Descripción                  | Valor por defecto        |
+| -------------- | ---------------------------- | ------------------------ |
+| `APP_NAME`     | Nombre de la aplicación      | `API-NestJS-Boilerplate` |
+| `NODE_ENV`     | Entorno de ejecución         | `development`            |
+| `HOST`         | Host del servidor            | `0.0.0.0`                |
+| `PORT`         | Puerto del servidor          | `3001`                   |
+| `JWT_SECRET`   | Clave secreta para JWT       | `your-secret-key`        |
+| `DATABASE_URL` | URL de conexión a PostgreSQL | `postgresql://...`       |
+| `REDIS_HOST`   | Host de Redis                | `localhost`              |
+| `REDIS_PORT`   | Puerto de Redis              | `6379`                   |
+
+### Sistema de Roles y Permisos
+
+#### Roles por Defecto
+
+- **admin**: Acceso completo al sistema
+- **user**: Acceso limitado de usuario estándar
+
+#### Permisos Disponibles
+
+**Gestión de Usuarios:**
+
+- `users:create` - Crear usuarios
+- `users:read` - Leer información de usuarios
+- `users:update` - Actualizar usuarios
+- `users:delete` - Eliminar usuarios
+
+**Gestión de Roles:**
+
+- `roles:create` - Crear roles
+- `roles:read` - Leer información de roles
+- `roles:update` - Actualizar roles
+- `roles:delete` - Eliminar roles
+
+**Gestión de Permisos:**
+
+- `permissions:create` - Crear permisos
+- `permissions:read` - Leer información de permisos
+- `permissions:update` - Actualizar permisos
+- `permissions:delete` - Eliminar permisos
+
+### Usuario Administrador por Defecto
+
+Al iniciar la aplicación por primera vez, se crea automáticamente:
+
+- **Email**: `admin@example.com`
+- **Contraseña**: `admin123`
+- **Rol**: `admin` (con todos los permisos)
+
+> ⚠️ **Importante**: Cambia estas credenciales en producción
 
 ## 🧪 Testing
 
@@ -249,6 +354,112 @@ pnpm run test
 - **Tests Unitarios**: Prueban componentes individuales
 - **Tests E2E**: Prueban flujos completos de la aplicación
 - **Cobertura Global**: Combina métricas de ambos tipos de tests
+
+## 🔐 Sistema de Autenticación y RBAC
+
+### Uso de Guards y Decoradores
+
+#### Protección con JWT
+
+```typescript
+@Controller('users')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+export class UsersController {
+  // Todos los endpoints requieren autenticación
+}
+```
+
+#### Control de Acceso por Roles
+
+```typescript
+@Controller('admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin')
+export class AdminController {
+  // Solo usuarios con rol 'admin' pueden acceder
+}
+```
+
+#### Control de Acceso por Permisos
+
+```typescript
+@Post()
+@UseGuards(JwtAuthGuard, PermissionsGuard)
+@Permissions('users:create')
+createUser(@Body() createUserDto: CreateUserDto) {
+  // Solo usuarios con permiso 'users:create'
+}
+```
+
+#### Obtener Usuario Actual
+
+```typescript
+@Get('profile')
+@UseGuards(JwtAuthGuard)
+getProfile(@CurrentUser() user: User) {
+  return user;
+}
+```
+
+### Flujo de Autenticación
+
+1. **Registro/Login**: El usuario se registra o inicia sesión
+2. **Token JWT**: Se genera un token JWT con información del usuario, roles y permisos
+3. **Autorización**: Cada request incluye el token en el header `Authorization: Bearer <token>`
+4. **Validación**: Los guards validan el token y verifican permisos/roles
+5. **Acceso**: Se permite o deniega el acceso según las reglas definidas
+
+### Estructura del Token JWT
+
+```json
+{
+  "sub": "user-uuid",
+  "email": "user@example.com",
+  "roles": ["admin", "user"],
+  "permissions": ["users:create", "users:read", "roles:manage"],
+  "iat": 1640995200,
+  "exp": 1641081600
+}
+```
+
+### Personalización del Sistema RBAC
+
+#### Crear Nuevos Permisos
+
+```typescript
+// En auth.constants.ts
+export const CUSTOM_PERMISSIONS = {
+  POSTS_CREATE: 'posts:create',
+  POSTS_PUBLISH: 'posts:publish',
+};
+```
+
+#### Asignar Permisos a Roles
+
+```typescript
+// Programáticamente
+await this.roleUseCase.assignPermission(roleId, {
+  permissionId: 'permission-uuid'
+});
+
+// O via API
+POST /roles/:id/assign-permission
+{
+  "permissionId": "permission-uuid"
+}
+```
+
+#### Crear Roles Personalizados
+
+```typescript
+// Via API
+POST /roles
+{
+  "name": "moderator",
+  "description": "Usuario moderador con permisos limitados"
+}
+```
 
 ## 📖 Documentación
 
@@ -275,6 +486,28 @@ pnpm run docss
 2. Haz clic en "Use this template"
 3. Selecciona "Create a new repository"
 4. Configura tu nuevo repositorio
+
+### Opción 2: Usar la Rama Template
+
+Este proyecto incluye una rama especial `template/authentication-rbac` que contiene:
+
+- Sistema completo de autenticación JWT
+- Control de acceso basado en roles (RBAC)
+- Gestión de usuarios, roles y permisos
+- Guards y decoradores personalizados
+- Inicialización automática de datos
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/Enrique2115/api-nestjs-boilerplate-rest.git
+cd api-nestjs-boilerplate-rest
+
+# Cambiar a la rama template
+git checkout template/authentication-rbac
+
+# Crear tu propia rama
+git checkout -b main
+```
 
 ## 🔄 Workflow de Desarrollo
 

@@ -73,6 +73,7 @@ describe('UsersController', () => {
       const query: PaginateQuery = {
         page: 1,
         limit: 10,
+        path: '/users',
       };
 
       const mockPaginatedResult = {
@@ -162,6 +163,17 @@ describe('UsersController', () => {
       const userId = 'nonexistent-id';
 
       userUseCase.getUserById.mockRejectedValue(new Error('User not found'));
+
+      await expect(controller.getUserById(userId)).rejects.toThrow(
+        'User not found',
+      );
+      expect(userUseCase.getUserById).toHaveBeenCalledWith(userId);
+    });
+
+    it('should throw error when user is null', async () => {
+      const userId = 'user-id';
+
+      userUseCase.getUserById.mockResolvedValue(undefined);
 
       await expect(controller.getUserById(userId)).rejects.toThrow(
         'User not found',
@@ -339,6 +351,17 @@ describe('UsersController', () => {
         data: mockUser,
       });
     });
+
+    it('should throw error when user not found', async () => {
+      const userId = 'nonexistent-id';
+
+      userUseCase.activateUser.mockRejectedValue(new Error('User not found'));
+
+      await expect(controller.activateUser(userId)).rejects.toThrow(
+        'User not found',
+      );
+      expect(userUseCase.activateUser).toHaveBeenCalledWith(userId);
+    });
   });
 
   describe('deactivateUser', () => {
@@ -358,6 +381,17 @@ describe('UsersController', () => {
         message: 'User deactivated successfully',
         data: mockUser,
       });
+    });
+
+    it('should throw error when user not found', async () => {
+      const userId = 'nonexistent-id';
+
+      userUseCase.deactivateUser.mockRejectedValue(new Error('User not found'));
+
+      await expect(controller.deactivateUser(userId)).rejects.toThrow(
+        'User not found',
+      );
+      expect(userUseCase.deactivateUser).toHaveBeenCalledWith(userId);
     });
   });
 });

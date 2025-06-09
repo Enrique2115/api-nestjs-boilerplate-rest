@@ -357,5 +357,329 @@ describe('UserUseCase', () => {
       );
       expect(roleRepository.findById).toHaveBeenCalledWith(roleId);
     });
+
+    it('should throw error when user already has the role', async () => {
+      const userId = 'user-id';
+      const roleId = 'role-id';
+
+      const mockUser = {
+        id: userId,
+        hasRole: vi.fn().mockReturnValue(true),
+      } as any;
+
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+      } as Role;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+      roleRepository.findById.mockResolvedValue(mockRole);
+
+      await expect(userUseCase.assignRole(userId, roleId)).rejects.toThrow(
+        'User already has this role',
+      );
+      expect(mockUser.hasRole).toHaveBeenCalledWith(mockRole.name);
+    });
+  });
+
+  describe('removeRole', () => {
+    it('should remove role from user successfully', async () => {
+      const userId = 'user-id';
+      const roleId = 'role-id';
+
+      const mockUser = {
+        id: userId,
+        hasRole: vi.fn().mockReturnValue(true),
+      } as any;
+
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+      } as Role;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+      roleRepository.findById.mockResolvedValue(mockRole);
+      userRepository.removeRole.mockResolvedValue(undefined);
+
+      await userUseCase.removeRole(userId, roleId);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(roleRepository.findById).toHaveBeenCalledWith(roleId);
+      expect(mockUser.hasRole).toHaveBeenCalledWith(mockRole.name);
+      expect(userRepository.removeRole).toHaveBeenCalledWith(userId, roleId);
+    });
+
+    it('should throw error when user not found', async () => {
+      const userId = 'nonexistent-id';
+      const roleId = 'role-id';
+
+      userRepository.findById.mockResolvedValue(undefined);
+
+      await expect(userUseCase.removeRole(userId, roleId)).rejects.toThrow(
+        'User not found',
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+    });
+
+    it('should throw error when role not found', async () => {
+      const userId = 'user-id';
+      const roleId = 'nonexistent-role-id';
+
+      const mockUser = {
+        id: userId,
+      } as User;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+      roleRepository.findById.mockResolvedValue(undefined);
+
+      await expect(userUseCase.removeRole(userId, roleId)).rejects.toThrow(
+        'Role not found',
+      );
+      expect(roleRepository.findById).toHaveBeenCalledWith(roleId);
+    });
+
+    it('should throw error when user does not have the role', async () => {
+      const userId = 'user-id';
+      const roleId = 'role-id';
+
+      const mockUser = {
+        id: userId,
+        hasRole: vi.fn().mockReturnValue(false),
+      } as any;
+
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+      } as Role;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+      roleRepository.findById.mockResolvedValue(mockRole);
+
+      await expect(userUseCase.removeRole(userId, roleId)).rejects.toThrow(
+        'User does not have this role',
+      );
+      expect(mockUser.hasRole).toHaveBeenCalledWith(mockRole.name);
+    });
+  });
+
+  describe('activateUser', () => {
+    it('should activate user successfully', async () => {
+      const userId = 'user-id';
+      const mockActivatedUser = {
+        id: userId,
+        isActive: true,
+      } as User;
+
+      userRepository.activate.mockResolvedValue(mockActivatedUser);
+
+      const result = await userUseCase.activateUser(userId);
+
+      expect(userRepository.activate).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockActivatedUser);
+    });
+  });
+
+  describe('deactivateUser', () => {
+    it('should deactivate user successfully', async () => {
+      const userId = 'user-id';
+      const mockDeactivatedUser = {
+        id: userId,
+        isActive: false,
+      } as User;
+
+      userRepository.deactivate.mockResolvedValue(mockDeactivatedUser);
+
+      const result = await userUseCase.deactivateUser(userId);
+
+      expect(userRepository.deactivate).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockDeactivatedUser);
+    });
+  });
+
+  describe('verifyUserEmail', () => {
+    it('should verify user email successfully', async () => {
+      const userId = 'user-id';
+      const mockVerifiedUser = {
+        id: userId,
+        isEmailVerified: true,
+      } as User;
+
+      userRepository.update.mockResolvedValue(mockVerifiedUser);
+
+      const result = await userUseCase.verifyUserEmail(userId);
+
+      expect(userRepository.update).toHaveBeenCalledWith(userId, {
+        isEmailVerified: true,
+      });
+      expect(result).toEqual(mockVerifiedUser);
+    });
+
+    it('should return null when user not found', async () => {
+      const userId = 'nonexistent-id';
+
+      userRepository.update.mockResolvedValue(undefined);
+
+      const result = await userUseCase.verifyUserEmail(userId);
+
+      expect(userRepository.update).toHaveBeenCalledWith(userId, {
+        isEmailVerified: true,
+      });
+
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('checkUserPermission', () => {
+    it('should return true when user has permission', async () => {
+      const userId = 'user-id';
+      const permissionName = 'read';
+
+      const mockUser = {
+        id: userId,
+        isActive: true,
+        hasPermission: vi.fn().mockReturnValue(true),
+      } as any;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.checkUserPermission(
+        userId,
+        permissionName,
+      );
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(mockUser.hasPermission).toHaveBeenCalledWith(permissionName);
+      expect(result).toBe(true);
+    });
+
+    it('should return false when user does not have permission', async () => {
+      const userId = 'user-id';
+      const permissionName = 'write';
+
+      const mockUser = {
+        id: userId,
+        isActive: true,
+        hasPermission: vi.fn().mockReturnValue(false),
+      } as any;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.checkUserPermission(
+        userId,
+        permissionName,
+      );
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(mockUser.hasPermission).toHaveBeenCalledWith(permissionName);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when user not found', async () => {
+      const userId = 'nonexistent-id';
+      const permissionName = 'read';
+
+      userRepository.findById.mockResolvedValue(undefined);
+
+      const result = await userUseCase.checkUserPermission(
+        userId,
+        permissionName,
+      );
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when user is inactive', async () => {
+      const userId = 'user-id';
+      const permissionName = 'read';
+
+      const mockUser = {
+        id: userId,
+        isActive: false,
+      } as User;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.checkUserPermission(
+        userId,
+        permissionName,
+      );
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('getUserPermissions', () => {
+    it('should return user permissions successfully', async () => {
+      const userId = 'user-id';
+
+      const mockUser = {
+        id: userId,
+        isActive: true,
+        roles: [
+          {
+            permissions: [{ name: 'read' }, { name: 'write' }],
+          },
+          {
+            permissions: [
+              { name: 'write' }, // duplicate permission
+              { name: 'delete' },
+            ],
+          },
+        ],
+      } as any;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.getUserPermissions(userId);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(['read', 'write', 'delete']);
+    });
+
+    it('should return empty array when user not found', async () => {
+      const userId = 'nonexistent-id';
+
+      userRepository.findById.mockResolvedValue(undefined);
+
+      const result = await userUseCase.getUserPermissions(userId);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when user is inactive', async () => {
+      const userId = 'user-id';
+
+      const mockUser = {
+        id: userId,
+        isActive: false,
+      } as User;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.getUserPermissions(userId);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when user has no roles', async () => {
+      const userId = 'user-id';
+
+      const mockUser = {
+        id: userId,
+        isActive: true,
+        roles: [],
+      } as any;
+
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const result = await userUseCase.getUserPermissions(userId);
+
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(result).toEqual([]);
+    });
   });
 });

@@ -131,13 +131,23 @@ describe('RolesController', () => {
       });
     });
 
-    it('should handle errors when getting role by id', async () => {
-      const roleId = '1';
-      const error = new Error('Role not found');
-      mockRoleUseCase.getRoleById.mockRejectedValue(error);
+    it('should throw error when role is not found', async () => {
+      const roleId = 'non-existent-id';
+      mockRoleUseCase.getRoleById.mockResolvedValue(undefined);
 
       await expect(rolesController.getRoleById(roleId)).rejects.toThrow(
         'Role not found',
+      );
+      expect(mockRoleUseCase.getRoleById).toHaveBeenCalledWith(roleId);
+    });
+
+    it('should handle errors when getting role by id', async () => {
+      const roleId = '1';
+      const error = new Error('Database connection failed');
+      mockRoleUseCase.getRoleById.mockRejectedValue(error);
+
+      await expect(rolesController.getRoleById(roleId)).rejects.toThrow(
+        'Database connection failed',
       );
       expect(mockRoleUseCase.getRoleById).toHaveBeenCalledWith(roleId);
     });
@@ -197,9 +207,12 @@ describe('RolesController', () => {
 
       mockRoleUseCase.deleteRole.mockResolvedValue(undefined);
 
-      await rolesController.deleteRole(roleId);
+      const result = await rolesController.deleteRole(roleId);
 
       expect(mockRoleUseCase.deleteRole).toHaveBeenCalledWith(roleId);
+      expect(result).toEqual({
+        message: 'Role deleted successfully',
+      });
     });
 
     it('should handle errors when deleting role', async () => {
@@ -226,12 +239,19 @@ describe('RolesController', () => {
 
       mockRoleUseCase.assignPermission.mockResolvedValue(mockRole);
 
-      await rolesController.assignPermission(roleId, assignPermissionDto);
+      const result = await rolesController.assignPermission(
+        roleId,
+        assignPermissionDto,
+      );
 
       expect(mockRoleUseCase.assignPermission).toHaveBeenCalledWith(
         roleId,
         assignPermissionDto.permissionId,
       );
+      expect(result).toEqual({
+        message: 'Permission assigned successfully',
+        data: mockRole,
+      });
     });
 
     it('should handle errors when assigning permission', async () => {
@@ -256,15 +276,27 @@ describe('RolesController', () => {
     it('should remove permission from role successfully', async () => {
       const roleId = '1';
       const permissionId = 'permission-1';
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+        permissions: [],
+      };
 
-      mockRoleUseCase.removePermission.mockResolvedValue(undefined);
+      mockRoleUseCase.removePermission.mockResolvedValue(mockRole);
 
-      await rolesController.removePermission(roleId, permissionId);
+      const result = await rolesController.removePermission(
+        roleId,
+        permissionId,
+      );
 
       expect(mockRoleUseCase.removePermission).toHaveBeenCalledWith(
         roleId,
         permissionId,
       );
+      expect(result).toEqual({
+        message: 'Permission removed successfully',
+        data: mockRole,
+      });
     });
 
     it('should handle errors when removing permission', async () => {
@@ -280,6 +312,96 @@ describe('RolesController', () => {
         roleId,
         permissionId,
       );
+    });
+  });
+
+  describe('activateRole', () => {
+    it('should activate role successfully', async () => {
+      const roleId = '1';
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+        description: 'Administrator role',
+        isActive: true,
+        permissions: [],
+      };
+
+      mockRoleUseCase.activateRole.mockResolvedValue(mockRole);
+
+      const result = await rolesController.activateRole(roleId);
+
+      expect(mockRoleUseCase.activateRole).toHaveBeenCalledWith(roleId);
+      expect(result).toEqual({
+        message: 'Role activated successfully',
+        data: mockRole,
+      });
+    });
+
+    it('should handle errors when activating role', async () => {
+      const roleId = '1';
+      const error = new Error('Role activation failed');
+      mockRoleUseCase.activateRole.mockRejectedValue(error);
+
+      await expect(rolesController.activateRole(roleId)).rejects.toThrow(
+        'Role activation failed',
+      );
+      expect(mockRoleUseCase.activateRole).toHaveBeenCalledWith(roleId);
+    });
+
+    it('should handle role not found when activating', async () => {
+      const roleId = 'non-existent-id';
+      const error = new Error('Role not found');
+      mockRoleUseCase.activateRole.mockRejectedValue(error);
+
+      await expect(rolesController.activateRole(roleId)).rejects.toThrow(
+        'Role not found',
+      );
+      expect(mockRoleUseCase.activateRole).toHaveBeenCalledWith(roleId);
+    });
+  });
+
+  describe('deactivateRole', () => {
+    it('should deactivate role successfully', async () => {
+      const roleId = '1';
+      const mockRole = {
+        id: roleId,
+        name: 'admin',
+        description: 'Administrator role',
+        isActive: false,
+        permissions: [],
+      };
+
+      mockRoleUseCase.deactivateRole.mockResolvedValue(mockRole);
+
+      const result = await rolesController.deactivateRole(roleId);
+
+      expect(mockRoleUseCase.deactivateRole).toHaveBeenCalledWith(roleId);
+      expect(result).toEqual({
+        message: 'Role deactivated successfully',
+        data: mockRole,
+      });
+    });
+
+    it('should handle errors when deactivating role', async () => {
+      const roleId = '1';
+      const error = new Error('Role deactivation failed');
+      mockRoleUseCase.deactivateRole.mockRejectedValue(error);
+
+      await expect(rolesController.deactivateRole(roleId)).rejects.toThrow(
+        'Role deactivation failed',
+      );
+      expect(mockRoleUseCase.deactivateRole).toHaveBeenCalledWith(roleId);
+    });
+
+    it('should handle role not found when deactivating', async () => {
+      const roleId = 'non-existent-id';
+      const error = new Error('Role not found');
+      mockRoleUseCase.deactivateRole.mockRejectedValue(error);
+
+      await expect(rolesController.deactivateRole(roleId)).rejects.toThrow(
+        'Role not found',
+      );
+      expect(mockRoleUseCase.deactivateRole).toHaveBeenCalledWith(roleId);
     });
   });
 });

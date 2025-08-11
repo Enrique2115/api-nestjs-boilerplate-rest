@@ -18,7 +18,7 @@ jobs:
     outputs:
       image_size: ${{ steps.docker-base.outputs.image_size }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.base_ref }}
       - name: Get commit short hash
@@ -50,7 +50,7 @@ jobs:
       image_size: ${{ steps.docker-head.outputs.image_size }}
       commit_short: ${{ steps.get-commit.outputs.short }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
       - name: Get commit short hash
@@ -95,7 +95,7 @@ jobs:
           echo "Full module path=${branch_name#refs/heads/}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout wiki
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ github.repository }}.wiki
           path: wiki

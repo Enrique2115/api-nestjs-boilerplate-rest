@@ -57,14 +57,14 @@ importers:
         specifier: ^17.2.2
         version: 17.2.2
       fastify:
-        specifier: 5.4.0
-        version: 5.4.0
+        specifier: 5.5.0
+        version: 5.5.0
       joi:
         specifier: ^18.0.1
         version: 18.0.1
       nestjs-pino:
         specifier: ^4.4.0
-        version: 4.4.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(pino-http@10.5.0)(pino@9.9.0)(rxjs@7.8.2)
+        version: 4.4.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(pino-http@10.5.0)(pino@9.9.1)(rxjs@7.8.2)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -3323,6 +3323,9 @@ packages:
   fastify@5.4.0:
     resolution: {integrity: sha512-I4dVlUe+WNQAhKSyv15w+dwUh2EPiEl4X2lGYMmNSgF83WzTMAPKGdWEv5tPsCQOb+SOZwz8Vlta2vF+OeDgRw==}
 
+  fastify@5.5.0:
+    resolution: {integrity: sha512-ZWSWlzj3K/DcULCnCjEiC2zn2FBPdlZsSA/pnPa/dbUfLvxkD/Nqmb0XXMXLrWkeM4uQPUvjdJpwtXmTfriXqw==}
+
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
 
@@ -4550,8 +4553,8 @@ packages:
   pino-std-serializers@7.0.0:
     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
 
-  pino@9.9.0:
-    resolution: {integrity: sha512-zxsRIQG9HzG+jEljmvmZupOMDUQ0Jpj0yAgE28jQvvrdYTlEaiGwelJpdndMl/MBuRr70heIj83QyqJUWaU8mQ==}
+  pino@9.9.1:
+    resolution: {integrity: sha512-40SszWPOPwGhUIJ3zj0PsbMNV1bfg8nw5Qp/tP2FE2p3EuycmhDeYimKOMBAu6rtxcSw2QpjJsuK5A6v+en8Yw==}
     hasBin: true
 
   piscina@4.9.2:
@@ -9068,7 +9071,25 @@ snapshots:
       fast-json-stringify: 6.0.1
       find-my-way: 9.3.0
       light-my-request: 6.6.0
-      pino: 9.9.0
+      pino: 9.9.1
+      process-warning: 5.0.0
+      rfdc: 1.4.1
+      secure-json-parse: 4.0.0
+      semver: 7.7.2
+      toad-cache: 3.7.0
+
+  fastify@5.5.0:
+    dependencies:
+      '@fastify/ajv-compiler': 4.0.2
+      '@fastify/error': 4.2.0
+      '@fastify/fast-json-stringify-compiler': 5.0.3
+      '@fastify/proxy-addr': 5.0.0
+      abstract-logging: 2.0.1
+      avvio: 9.1.0
+      fast-json-stringify: 6.0.1
+      find-my-way: 9.3.0
+      light-my-request: 6.6.0
+      pino: 9.9.1
       process-warning: 5.0.0
       rfdc: 1.4.1
       secure-json-parse: 4.0.0
@@ -9960,10 +9981,10 @@ snapshots:
 
   neotraverse@0.6.18: {}
 
-  nestjs-pino@4.4.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(pino-http@10.5.0)(pino@9.9.0)(rxjs@7.8.2):
+  nestjs-pino@4.4.0(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(pino-http@10.5.0)(pino@9.9.1)(rxjs@7.8.2):
     dependencies:
       '@nestjs/common': 11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      pino: 9.9.0
+      pino: 9.9.1
       pino-http: 10.5.0
       rxjs: 7.8.2
 
@@ -10260,7 +10281,7 @@ snapshots:
   pino-http@10.5.0:
     dependencies:
       get-caller-file: 2.0.5
-      pino: 9.9.0
+      pino: 9.9.1
       pino-std-serializers: 7.0.0
       process-warning: 5.0.0
 
@@ -10282,7 +10303,7 @@ snapshots:
 
   pino-std-serializers@7.0.0: {}
 
-  pino@9.9.0:
+  pino@9.9.1:
     dependencies:
       atomic-sleep: 1.0.0
       fast-redact: 3.5.0

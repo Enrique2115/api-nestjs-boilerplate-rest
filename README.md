@@ -116,9 +116,20 @@ Este boilerplate proporciona una base sólida para desarrollar APIs REST con Nes
    REDIS_PASSWORD=tu_api_password
    REDIS_PORT=6379
 
+   # REDIS - Configuración avanzada (opcional)
+   REDIS_DB=0
+   REDIS_CONNECT_TIMEOUT=10000
+   REDIS_COMMAND_TIMEOUT=5000
+   REDIS_RETRY_DELAY_ON_FAILURE=100
+   REDIS_MAX_RETRIES=3
+   REDIS_ENABLE_TLS=false
+   REDIS_TLS_REJECT_UNAUTHORIZED=true
+   REDIS_POOL_SIZE=10
+   REDIS_ENABLE_OFFLINE_QUEUE=true
+
    # BD
    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
-   # DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
+   # DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres # Para usar con docker compose
    DATABASE_TYPE=postgres # Para usar con docker compose
    ```
 
@@ -237,9 +248,7 @@ tests/
 
 ### Health Check
 
-- `GET /health` - Estado de la aplicación
-- `GET /health/database` - Estado de la base de datos
-- `GET /health/redis` - Estado de Redis
+- `GET /health` - Estado de la aplicación (devuelve estado de la base de datos)
 
 ### Autenticación
 
@@ -275,7 +284,7 @@ tests/
 
 ### Documentación
 
-- `GET /api` - Swagger UI (solo en desarrollo)
+- `GET /docs` - Swagger UI (solo en desarrollo)
 - `GET /api-json` - Especificación OpenAPI JSON
 
 ## 🔧 Configuración

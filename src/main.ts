@@ -11,7 +11,8 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
-import { API, envs, METHODS, swaggerConfig } from './config';
+import { API, METHODS, swaggerConfig } from './config';
+import { TypedConfigService } from './core/infra/enviroment/config.service';
 import { LoggerInterceptor } from './core/infra/logger/logger.interceptor';
 import { ErrorResponseNormalizerFilter } from './core/infra/response-normalizer/error-response.filter';
 import { SuccessResponseNormalizerInterceptor } from './core/infra/response-normalizer/success-response.interceptor';
@@ -23,6 +24,7 @@ async function bootstrap() {
     { bufferLogs: true },
   );
 
+  const configService = app.get(TypedConfigService);
   app.useLogger(app.get(Logger));
   // TODO: Update new version @nestjs/pino
   //  Se debe esperar la nueva version de @nestjs/pino para solventar warning unsupported route path
@@ -57,7 +59,7 @@ async function bootstrap() {
     swaggerOptions: { persistAuthorization: true },
   });
 
-  await app.listen(envs.PORT, envs.HOST);
+  await app.listen(configService.app.PORT, configService.app.HOST);
 }
 
 bootstrap().catch(handleError);

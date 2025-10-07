@@ -2,16 +2,23 @@ import KeyvRedis from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 
-import { redisConfig } from '@/src/config/redis.config';
+import { RedisConfigService } from '@/src/config/redis.config';
 
+import { EnviromentModule } from '../infra/enviroment/enviroment.module';
 import { RedisService } from './redis.service';
 
 @Module({
   imports: [
+    EnviromentModule,
     CacheModule.registerAsync({
-      useFactory: async () => ({
-        stores: [new KeyvRedis(redisConfig)],
-      }),
+      imports: [EnviromentModule],
+      inject: [RedisConfigService],
+      useFactory: async (redisConfigService: RedisConfigService) => {
+        const redisConfig = redisConfigService.getRedisConfig();
+        return {
+          stores: [new KeyvRedis(redisConfig)],
+        };
+      },
     }),
   ],
   providers: [RedisService],

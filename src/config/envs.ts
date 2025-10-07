@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import * as joi from 'joi';
 
 interface EnvVars {
@@ -23,7 +21,7 @@ interface EnvVars {
   DATABASE_URL: string;
 }
 
-const envsSchema = joi
+export const envsSchema = joi
   .object<EnvVars>({
     PORT: joi.number().required(),
     HOST: joi.string().required(),
@@ -57,36 +55,3 @@ const envsSchema = joi
     DATABASE_URL: joi.string().required(),
   })
   .unknown(true);
-
-const { error, value } = envsSchema.validate(process.env);
-
-if (error) {
-  throw new Error(`Config validation error: ${error.message}`);
-}
-
-const envVars: EnvVars = value;
-
-export const envs = {
-  PORT: envVars.PORT,
-  HOST: envVars.HOST,
-  NODE_ENV: envVars.NODE_ENV,
-  REDIS: {
-    HOST: envVars.REDIS_HOST,
-    PORT: envVars.REDIS_PORT,
-    USERNAME: envVars.REDIS_USERNAME,
-    PASSWORD: envVars.REDIS_PASSWORD,
-    DB: envVars.REDIS_DB || 0,
-    CONNECT_TIMEOUT: envVars.REDIS_CONNECT_TIMEOUT || 10_000,
-    COMMAND_TIMEOUT: envVars.REDIS_COMMAND_TIMEOUT || 5000,
-    RETRY_DELAY_ON_FAILURE: envVars.REDIS_RETRY_DELAY_ON_FAILURE || 100,
-    MAX_RETRIES: envVars.REDIS_MAX_RETRIES || 3,
-    ENABLE_TLS: envVars.REDIS_ENABLE_TLS ?? envVars.NODE_ENV === 'production',
-    TLS_REJECT_UNAUTHORIZED: envVars.REDIS_TLS_REJECT_UNAUTHORIZED ?? true,
-    POOL_SIZE: envVars.REDIS_POOL_SIZE || 10,
-    ENABLE_OFFLINE_QUEUE: envVars.REDIS_ENABLE_OFFLINE_QUEUE ?? true,
-  },
-  DATABASE: {
-    TYPE: envVars.DATABASE_TYPE,
-    URL: envVars.DATABASE_URL,
-  },
-};

@@ -18,6 +18,7 @@ interface EnvVars {
   REDIS_POOL_SIZE?: number;
   REDIS_ENABLE_OFFLINE_QUEUE?: boolean;
   JWT_SECRET: string;
+  JWT_EXPIRES_IN: string;
   DATABASE_TYPE: string;
   DATABASE_URL: string;
 }
@@ -53,6 +54,7 @@ export const envsSchema = joi
       .default(10),
     REDIS_ENABLE_OFFLINE_QUEUE: joi.boolean().optional().default(true),
     JWT_SECRET: joi.string().required(),
+    JWT_EXPIRES_IN: joi.string().required(),
     DATABASE_TYPE: joi.string().required(),
     DATABASE_URL: joi.string().required(),
   })

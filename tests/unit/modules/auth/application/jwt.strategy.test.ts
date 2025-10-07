@@ -1,5 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 
+import { TypedConfigService } from '@/src/core/infra/enviroment/config.service';
 import { AuthUseCase, JwtPayload } from '@/src/modules/auth/application';
 import { JwtStrategy } from '@/src/modules/auth/application/strategies/jwt.strategy';
 import { User } from '@/src/modules/users/domain';
@@ -9,10 +10,13 @@ import { createMock, Mock } from '@/tests/utils/mock';
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
   let authUseCase: Mock<AuthUseCase>;
+  let typeConfigService: Mock<TypedConfigService>;
 
   beforeEach(() => {
     authUseCase = createMock<AuthUseCase>();
-    jwtStrategy = new JwtStrategy(authUseCase);
+    typeConfigService = createMock<TypedConfigService>();
+    typeConfigService.jwt.SECRET = 'test-secret';
+    jwtStrategy = new JwtStrategy(authUseCase, typeConfigService);
   });
 
   describe('validate', () => {

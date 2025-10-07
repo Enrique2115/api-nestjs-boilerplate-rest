@@ -36,6 +36,7 @@
     "@keyv/redis": "^5.1.2",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.1.6",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",

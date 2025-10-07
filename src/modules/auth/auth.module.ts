@@ -4,7 +4,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { envs } from '@/src/config';
+import { TypedConfigService } from '@/src/core/infra/enviroment/config.service';
+import { EnviromentModule } from '@/src/core/infra/enviroment/enviroment.module';
 
 // Auth
 import { AuthUseCase, JwtStrategy } from '@/modules/auth/application';
@@ -28,11 +29,16 @@ import { UsersController } from '@/modules/users/presentation';
 
 @Module({
   imports: [
+    EnviromentModule,
     TypeOrmModule.forFeature([User, Role, Permission]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: envs.JWT.SECRET,
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      imports: [EnviromentModule],
+      useFactory: (typeConfigService: TypedConfigService) => ({
+        secret: typeConfigService.jwt.SECRET,
+        signOptions: { expiresIn: typeConfigService.jwt.EXPIRES_IN },
+      }),
+      inject: [TypedConfigService],
     }),
   ],
   controllers: [
@@ -80,10 +86,10 @@ import { UsersController } from '@/modules/users/presentation';
     },
     {
       provide: JwtStrategy,
-      useFactory: jwtService => {
-        return new JwtStrategy(jwtService);
+      useFactory: (authUseCase, typeConfigService: TypedConfigService) => {
+        return new JwtStrategy(authUseCase, typeConfigService);
       },
-      inject: [AuthUseCase],
+      inject: [AuthUseCase, TypedConfigService],
     },
   ],
   exports: [

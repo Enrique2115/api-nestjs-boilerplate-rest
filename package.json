@@ -58,7 +58,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@commitlint/types": "^20.0.0",
-    "@compodoc/compodoc": "^1.1.26",
+    "@compodoc/compodoc": "^1.1.32",
     "@eslint/compat": "^1.4.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",

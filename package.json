@@ -62,7 +62,7 @@
     "@eslint/compat": "^1.4.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.39.1",
-    "@nestjs/cli": "^11.0.10",
+    "@nestjs/cli": "^11.0.12",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.9",
     "@swc/cli": "^0.7.9",

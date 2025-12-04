@@ -191,6 +191,8 @@ export default [
       'pnpm-lock.yaml',
       '.gitignore',
       '*.log',
+      'vitest.config.*',
+      'create-vitest-test-config.*',
     ],
   },
 ];

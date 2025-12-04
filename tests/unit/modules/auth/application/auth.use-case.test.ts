@@ -1,3 +1,11 @@
+import { vi } from 'vitest';
+
+// Mock bcrypt module
+vi.mock('bcryptjs', () => ({
+  compare: vi.fn(),
+  hash: vi.fn(),
+}));
+
 import * as bcrypt from 'bcryptjs';
 
 import {
@@ -10,23 +18,16 @@ import { IUserRepository, User } from '@/src/modules/users/domain';
 
 import { createMock, Mock } from '@/tests/utils/mock';
 
-// Mock bcrypt
-vi.mock('bcryptjs', () => ({
-  compare: vi.fn(),
-  hash: vi.fn(),
-}));
-
 describe('AuthUseCase', () => {
   let authUseCase: AuthUseCase;
   let userRepository: Mock<IUserRepository>;
   let jwtService: Mock<IJwtService>;
-  let mockBcrypt: typeof bcrypt;
 
   beforeEach(() => {
     userRepository = createMock<IUserRepository>();
     jwtService = createMock<IJwtService>();
     authUseCase = new AuthUseCase(userRepository, jwtService);
-    mockBcrypt = bcrypt as any;
+    vi.clearAllMocks();
   });
 
   describe('login', () => {
@@ -50,13 +51,13 @@ describe('AuthUseCase', () => {
       } as User;
 
       userRepository.findByEmail.mockResolvedValue(mockUser);
-      (mockBcrypt.compare as any).mockResolvedValue(true);
+      vi.mocked(bcrypt.compare).mockResolvedValue(true as never);
       jwtService.sign.mockReturnValue('mock-jwt-token');
 
       const result = await authUseCase.login(loginDto);
 
       expect(userRepository.findByEmail).toHaveBeenCalledWith(loginDto.email);
-      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+      expect(bcrypt.compare).toHaveBeenCalledWith(
         loginDto.password,
         mockUser.password,
       );
@@ -120,12 +121,12 @@ describe('AuthUseCase', () => {
       } as User;
 
       userRepository.findByEmail.mockResolvedValue(mockUser);
-      (mockBcrypt.compare as any).mockResolvedValue(false);
+      vi.mocked(bcrypt.compare).mockResolvedValue(false as never);
 
       await expect(authUseCase.login(loginDto)).rejects.toThrow(
         'Invalid credentials',
       );
-      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+      expect(bcrypt.compare).toHaveBeenCalledWith(
         loginDto.password,
         mockUser.password,
       );
@@ -151,7 +152,7 @@ describe('AuthUseCase', () => {
       } as User;
 
       userRepository.findByEmail.mockResolvedValue(undefined);
-      (mockBcrypt.hash as any).mockResolvedValue('hashedpassword');
+      vi.mocked(bcrypt.hash).mockResolvedValue('hashedpassword' as never);
       userRepository.create.mockResolvedValue(mockUser);
 
       const result = await authUseCase.register(registerDto);
@@ -159,7 +160,7 @@ describe('AuthUseCase', () => {
       expect(userRepository.findByEmail).toHaveBeenCalledWith(
         registerDto.email,
       );
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(registerDto.password, 12);
+      expect(bcrypt.hash).toHaveBeenCalledWith(registerDto.password, 12);
       expect(userRepository.create).toHaveBeenCalledWith({
         email: registerDto.email,
         password: 'hashedpassword',
@@ -250,8 +251,8 @@ describe('AuthUseCase', () => {
       } as User;
 
       userRepository.findById.mockResolvedValue(mockUser);
-      (mockBcrypt.compare as any).mockResolvedValue(true);
-      (mockBcrypt.hash as any).mockResolvedValue('hashednewpassword');
+      vi.mocked(bcrypt.compare).mockResolvedValue(true as never);
+      vi.mocked(bcrypt.hash).mockResolvedValue('hashednewpassword' as never);
       userRepository.update.mockResolvedValue(mockUser);
 
       const result = await authUseCase.changePassword(
@@ -261,11 +262,11 @@ describe('AuthUseCase', () => {
       );
 
       expect(userRepository.findById).toHaveBeenCalledWith(userId);
-      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+      expect(bcrypt.compare).toHaveBeenCalledWith(
         oldPassword,
         mockUser.password,
       );
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(newPassword, 12);
+      expect(bcrypt.hash).toHaveBeenCalledWith(newPassword, 12);
       expect(userRepository.update).toHaveBeenCalledWith(userId, {
         password: 'hashednewpassword',
       });
@@ -296,12 +297,12 @@ describe('AuthUseCase', () => {
       } as User;
 
       userRepository.findById.mockResolvedValue(mockUser);
-      (mockBcrypt.compare as any).mockResolvedValue(false);
+      vi.mocked(bcrypt.compare).mockResolvedValue(false as never);
 
       await expect(
         authUseCase.changePassword(userId, oldPassword, newPassword),
       ).rejects.toThrow('Invalid old password');
-      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+      expect(bcrypt.compare).toHaveBeenCalledWith(
         oldPassword,
         mockUser.password,
       );

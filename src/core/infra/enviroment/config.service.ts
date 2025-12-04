@@ -1,3 +1,5 @@
+import type * as ms from 'ms';
+
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -60,7 +62,7 @@ export class TypedConfigService {
   get jwt() {
     return {
       SECRET: this.configService.get<string>('jwt.SECRET'),
-      EXPIRES_IN: this.configService.get<string>('jwt.EXPIRES_IN'),
+      EXPIRES_IN: this.configService.get<ms.StringValue>('jwt.EXPIRES_IN'),
     };
   }
 }

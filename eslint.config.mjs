@@ -41,8 +41,6 @@ export default [
       ecmaVersion: 'latest',
       parser: tsParser,
       parserOptions: {
-        // Solucionando el error del project service
-        project: ['./tsconfig.build.json'],
         projectService: true,
         tsconfigRootDir: __dirname,
       },
@@ -193,6 +191,8 @@ export default [
       'pnpm-lock.yaml',
       '.gitignore',
       '*.log',
+      'vitest.config.*',
+      'create-vitest-test-config.*',
     ],
   },
 ];

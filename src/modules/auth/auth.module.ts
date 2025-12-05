@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import ms from 'ms';
 
 import { TypedConfigService } from '@/src/core/infra/enviroment/config.service';
 import { EnviromentModule } from '@/src/core/infra/enviroment/enviroment.module';
@@ -36,7 +37,7 @@ import { UsersController } from '@/modules/users/presentation';
       imports: [EnviromentModule],
       useFactory: (typeConfigService: TypedConfigService) => ({
         secret: typeConfigService.jwt.SECRET,
-        signOptions: { expiresIn: typeConfigService.jwt.EXPIRES_IN },
+        signOptions: { expiresIn: ms(typeConfigService.jwt.EXPIRES_IN) },
       }),
       inject: [TypedConfigService],
     }),

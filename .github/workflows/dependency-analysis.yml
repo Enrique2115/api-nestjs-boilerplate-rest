@@ -96,7 +96,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Create sticky comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: dependency-analysis
           message: |
